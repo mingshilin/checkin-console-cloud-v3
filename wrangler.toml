@@ -1,0 +1,33 @@
+﻿name = "checkin-console-v3"
+main = "src/worker.js"
+compatibility_date = "2026-04-25"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "checkin_v3"
+database_id = "4dca01ae-c69e-4f36-9d42-549c655b9351"
+
+[[durable_objects.bindings]]
+name = "WORKSPACE_LOCK"
+class_name = "WorkspaceLock"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["WorkspaceLock"]
+
+[vars]
+ADMIN_USERNAME = "admin"
+WEB_UI_OTP_CODE = "123456"
+
+[triggers]
+crons = ["*/1 * * * *"]
+
+[[routes]]
+pattern = "msl-123ljc.top/*"
+zone_name = "msl-123ljc.top"
+

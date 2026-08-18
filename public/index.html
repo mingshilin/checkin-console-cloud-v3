@@ -1,0 +1,1145 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>云端控制台 v3.8.5</title>
+  <style>
+    :root { --bg:#eef5fb;--bg2:#f8fbff;--panel:#ffffff;--soft:#f3f7fc;--line:#d9e4f2;--text:#17243a;--sub:#60718b;--btn:#2563d5;--ok:#16946f;--warn:#b77910;--err:#c94866;--cream:#8a5c10; }
+    body[data-theme="dark"]{ --bg:#08111f;--bg2:#0d1d35;--panel:#12243f;--soft:#183154;--line:#2b496f;--text:#e9f0ff;--sub:#94a9ca;--btn:#2e7cff;--ok:#24c08c;--warn:#e1a13a;--err:#ef5c76;--cream:#f4d89a; }
+    *{box-sizing:border-box} html,body{max-width:100%;overflow-x:hidden} body{margin:0;color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(1100px 520px at 16% -6%,rgba(127,213,202,.28) 0,transparent 58%),linear-gradient(180deg,var(--bg2),var(--bg))}
+    .hidden{display:none!important}.mono{font-family:Consolas,Menlo,monospace}.num{text-align:right;font-variant-numeric:tabular-nums}
+    .wrap{width:min(100% - 24px,1760px);margin:18px auto;padding:0;display:grid;grid-template-columns:minmax(0,1fr) 172px;gap:14px;align-items:start}.main-pane{min-width:0}.card{background:color-mix(in oklab,var(--panel) 98%,#fff 2%);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 14px 34px rgba(32,60,118,.08)}
+    .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:flex-start;padding:8px 4px 18px}.top .toolbar{justify-content:flex-end;max-width:820px}.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+    h1{margin:0;font-size:28px;line-height:1.15}.sub{margin:6px 0 0;color:var(--sub);line-height:1.45;font-size:14px}.muted{color:var(--sub)}
+    button{border:0;border-radius:12px;background:var(--btn);color:#fff;padding:8px 13px;font-weight:650;font-size:14px;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,213,.14)} button:disabled{opacity:.55;cursor:not-allowed} button.ghost{background:var(--soft);color:var(--text);border:1px solid var(--line);box-shadow:none} button.ok{background:var(--ok)} button.warn{background:var(--warn)} button.danger{background:var(--err)}
+    input,select,textarea{width:100%;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px;color:var(--text)} textarea{min-height:90px;resize:vertical}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:12px 0 16px}.stat{background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 78%,#fff 22%),var(--panel));border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}.stat .k{font-size:13px;color:var(--sub)}.stat .v{font-size:28px;font-weight:800}
+    .notice{margin:10px 0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--soft);white-space:pre-wrap;font-size:14px}.notice.err{border-color:var(--err)}.notice.ok{border-color:var(--ok)}
+    .nav.global-rail{position:sticky;top:18px;display:grid;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.78);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(32,60,118,.10)}body[data-theme="dark"] .nav.global-rail{background:rgba(13,29,53,.82)}.nav.global-rail button{display:grid;grid-template-columns:34px 1fr;grid-template-areas:"icon label" "icon note";align-items:center;gap:0 10px;min-height:72px;background:var(--panel);color:var(--text);border:1px solid var(--line);box-shadow:0 10px 20px rgba(22,49,86,.05);text-align:left}.nav.global-rail button.active{background:linear-gradient(135deg,#e8fff7,#ffffff);color:var(--btn);border-color:color-mix(in oklab,var(--ok) 36%,var(--line) 64%);box-shadow:0 16px 26px rgba(20,140,109,.12)}body[data-theme="dark"] .nav.global-rail button.active{background:linear-gradient(135deg,#123e3b,#152b4b)}.global-icon{grid-area:icon;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:color-mix(in oklab,var(--ok) 14%,var(--soft) 86%);font-weight:900}.global-label{grid-area:label;font-size:15px;font-weight:850}.global-note{grid-area:note;font-size:12px;color:var(--sub);font-weight:500;margin-top:3px}
+    .view{display:none}.view.active{display:block}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .tbl{border:1px solid var(--line);border-radius:18px;overflow:auto;max-height:420px;background:var(--panel)} table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px} th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle} th{position:sticky;top:0;background:var(--panel);z-index:2;text-align:left;font-size:12px;letter-spacing:.02em;color:var(--sub)} tbody tr{background:color-mix(in oklab,var(--panel) 96%,var(--soft) 4%)} tbody tr:hover{background:color-mix(in oklab,var(--soft) 74%,var(--panel) 26%)}
+    .site-actions{display:grid;grid-template-columns:repeat(4,minmax(80px,1fr));gap:6px}
+    .site-row{transition:background .15s ease}.site-row:hover{background:color-mix(in oklab,var(--soft) 55%,transparent 45%)}
+    .site-name{font-weight:800;font-size:15px}.site-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.site-url{max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cap-grid{display:grid;grid-template-columns:repeat(3,minmax(58px,1fr));gap:5px}.cap{border:1px solid var(--line);border-radius:7px;padding:5px 6px;text-align:center;font-size:12px;background:var(--panel)}.cap.ok{border-color:var(--ok);color:var(--ok)}.cap.err{border-color:var(--err);color:var(--err)}
+    .quota-card{display:grid;grid-template-columns:1.2fr 1fr;gap:8px;min-width:360px}.qmetric{border:1px solid var(--line);border-radius:13px;padding:10px;background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 84%,#fff 16%),var(--panel))}.qmetric .k{font-size:11px;color:var(--sub)}.qmetric .v{font-size:18px;font-weight:900;margin-top:2px;letter-spacing:.01em}.qmetric .raw{margin-top:3px;font-size:11px;color:var(--sub)}.qmetric.full{grid-column:1/-1}.qfail{border-color:var(--err);color:var(--err)}.qok{border-color:var(--ok);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--ok) 35%,transparent)}.qunit{font-size:12px;color:var(--cream);font-weight:700;margin-left:4px}.qdetail{margin-top:5px;display:grid;gap:2px;font-size:11px;color:var(--sub)}
+    details.action-menu{position:relative} details.action-menu summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--soft);font-weight:700} details.action-menu summary::-webkit-details-marker{display:none}.action-panel{position:absolute;right:0;top:36px;z-index:8;display:grid;grid-template-columns:repeat(2,112px);gap:6px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.18)}
+    .ratio{display:inline-flex;align-items:center;justify-content:flex-end;min-width:52px;text-align:right;border:1px solid color-mix(in oklab,var(--ok) 45%,var(--line) 55%);border-radius:999px;padding:2px 8px;background:color-mix(in oklab,var(--ok) 10%,var(--panel) 90%);font-variant-numeric:tabular-nums;font-weight:750}.ratio.empty{min-width:52px;border-style:dashed;border-color:var(--line);background:transparent;color:var(--sub);justify-content:center;font-weight:500}.price-source{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 7px;font-size:12px;color:var(--sub);margin-bottom:4px}.price-source.high{border-color:var(--ok);color:var(--ok)}.price-source.medium{border-color:var(--warn);color:var(--cream)}.price-source.missing,.price-source.mapping_only{border-style:dashed}
+    .cred{display:inline-block;margin-top:6px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px}.cred.ok{border-color:var(--ok);color:var(--ok)}.cred.missing,.cred.expired,.cred.auth_warning{border-color:var(--err);color:var(--err);background:color-mix(in oklab,var(--err) 10%,var(--panel) 90%)}
+    .health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}.health-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:linear-gradient(180deg,color-mix(in oklab,var(--soft) 62%,var(--panel) 38%),var(--panel))}.health-card .k{font-size:12px;color:var(--sub)}.health-card .v{font-size:24px;font-weight:900}.blocker{display:inline-flex;margin:2px 4px 2px 0;padding:2px 7px;border:1px solid var(--err);border-radius:999px;color:var(--err);background:color-mix(in oklab,var(--err) 9%,var(--panel) 91%);font-size:12px}.ready-ok{color:var(--ok);font-weight:800}.ready-bad{color:var(--err);font-weight:800}
+    .model-grid{display:grid;grid-template-columns:minmax(760px,1.55fr) minmax(380px,.85fr);gap:12px}.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin:0 0 8px}.panel-head h4{margin:0}.model-table th,.model-table td{padding:8px 10px}.model-title{font-weight:850;font-size:14px;color:var(--text)}.model-id{margin-top:2px;color:var(--sub);font-size:12px}.source-line{margin-top:4px;color:var(--sub);font-size:12px}.price-note{font-weight:750}.price-note.empty{color:var(--sub);font-weight:500}.diag{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 7px;background:var(--soft);font-size:12px;color:var(--sub)}.inline-check{display:inline-flex;align-items:center;gap:6px;color:var(--sub);font-size:12px}.inline-check input{width:auto}.site-row.replaced{opacity:.62}.danger-link{color:#ff96a6;border-color:var(--err)!important}
+    .ops-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px}.score-ring{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ok) calc(var(--score)*1%),color-mix(in oklab,var(--line) 60%,transparent) 0);position:relative}.score-ring:after{content:"";position:absolute;inset:10px;border-radius:50%;background:var(--panel)}.score-ring b{position:relative;z-index:1;font-size:30px}.issue-list{display:grid;gap:6px;max-height:230px;overflow:auto}.issue-item{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--soft)}.issue-item.critical{border-color:var(--err)}.issue-item.warn{border-color:var(--warn)}.issue-item.info{border-color:var(--line)}.trend-bars{display:grid;gap:7px}.bar-row{display:grid;grid-template-columns:92px 1fr 72px;gap:8px;align-items:center}.bar{height:9px;border-radius:999px;background:var(--soft);overflow:hidden}.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--btn),var(--ok));width:var(--w)}.site-layout{display:grid;grid-template-columns:360px minmax(0,1fr) 132px;gap:12px;align-items:start}.site-layout>.card,.site-main-card{min-width:0}.site-list{display:grid;gap:10px;max-height:760px;overflow:auto;padding-right:4px}.site-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 96%,#fff 4%),color-mix(in oklab,var(--panel) 90%,#dff6f0 10%));cursor:pointer;box-shadow:0 10px 24px rgba(25,46,95,.06)}.site-card:hover,.site-card.active{border-color:color-mix(in oklab,var(--ok) 45%,var(--btn) 55%);box-shadow:0 0 0 1px color-mix(in oklab,var(--ok) 18%,transparent),0 16px 30px rgba(18,64,88,.10)}.score-mini{font-weight:900;font-size:24px}.drawer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.prebox{white-space:pre-wrap;word-break:break-word;border:1px solid var(--line);border-radius:12px;background:var(--soft);padding:10px;max-height:260px;overflow:auto}.log-clusters{display:grid;gap:6px;max-height:210px;overflow:auto}.cluster{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--soft)}.mini-chart{min-height:150px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--soft)}.bulk-progress{display:none;margin:8px 0 12px}.bulk-progress.active{display:block}.progress-track{height:9px;border-radius:999px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}.progress-track i{display:block;height:100%;width:var(--w,0%);background:linear-gradient(90deg,var(--btn),var(--ok));border-radius:999px}.category-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .checkin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.checkin-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);display:grid;gap:7px}.checkin-card.success{border-color:color-mix(in oklab,var(--ok) 45%,var(--line) 55%);background:linear-gradient(180deg,color-mix(in oklab,var(--ok) 9%,var(--panel) 91%),var(--panel))}.checkin-card.info{border-color:color-mix(in oklab,var(--btn) 32%,var(--line) 68%)}.checkin-card.warning{border-color:color-mix(in oklab,var(--warn) 45%,var(--line) 55%);background:linear-gradient(180deg,color-mix(in oklab,var(--warn) 9%,var(--panel) 91%),var(--panel))}.checkin-card.error{border-color:color-mix(in oklab,var(--err) 55%,var(--line) 45%);background:linear-gradient(180deg,color-mix(in oklab,var(--err) 8%,var(--panel) 92%),var(--panel))}.checkin-title{font-size:14px;font-weight:850}.checkin-reason{font-size:12px;color:var(--sub);line-height:1.45}.checkin-summary{display:flex;flex-wrap:wrap;gap:6px}.checkin-summary .pill{font-size:12px}
+    .site-workbench{display:block}.site-stage{display:grid;gap:12px;min-width:0}.site-stage-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.site-summary-stack{display:grid;gap:8px}.site-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.site-kpi{border:1px solid var(--line);border-radius:12px;padding:14px;background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 85%,#fff 15%),var(--panel));box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}.site-kpi .k{font-size:11px;color:var(--sub);letter-spacing:.04em;text-transform:uppercase}.site-kpi .v{font-size:24px;font-weight:900;margin-top:4px}.site-kpi .raw{margin-top:4px;color:var(--sub);font-size:12px;line-height:1.45}.site-detail-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 97%,#fff 3%),color-mix(in oklab,var(--panel) 93%,#e9fbf7 7%));box-shadow:0 12px 28px rgba(24,58,91,.08)}.detail-tabs{display:grid;gap:8px;position:sticky;top:18px;align-self:start;z-index:3}.detail-tab{width:100%;min-height:58px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel);color:var(--sub);font-weight:800;cursor:pointer;text-align:left;line-height:1.2;box-shadow:0 6px 14px rgba(20,46,88,.04)}.detail-tab.active{background:linear-gradient(180deg,#e7faf4,#ffffff);color:var(--text);border-color:color-mix(in oklab,var(--ok) 35%,var(--line) 65%);box-shadow:0 10px 18px rgba(21,117,96,.10)}.tab-note{display:block;margin-top:4px;font-size:11px;font-weight:500;color:var(--sub)}.detail-body-grid{display:grid;gap:12px}.detail-action-row{display:flex;flex-wrap:wrap;gap:8px}.hero-badges{display:flex;flex-wrap:wrap;gap:8px}.hero-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:12px}.hero-pill.ok,.hero-pill.success{border-color:color-mix(in oklab,var(--ok) 45%,var(--line) 55%);color:var(--ok)}.hero-pill.info{border-color:color-mix(in oklab,var(--btn) 36%,var(--line) 64%);color:var(--btn)}.hero-pill.warn,.hero-pill.warning{border-color:color-mix(in oklab,var(--warn) 45%,var(--line) 55%);color:var(--cream)}.hero-pill.err,.hero-pill.error{border-color:color-mix(in oklab,var(--err) 45%,var(--line) 55%);color:var(--err)}.protocol-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.protocol-box{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--soft)}.protocol-box h5,.timeline-card h5,.wizard-card h5{margin:0 0 8px}.endpoint-list{display:grid;gap:8px}.endpoint-item{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel)}.endpoint-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.endpoint-path{font-family:Consolas,Menlo,monospace;font-size:12px;word-break:break-all}.wizard-steps{display:grid;gap:10px}.wizard-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:linear-gradient(180deg,var(--panel),color-mix(in oklab,var(--soft) 82%,var(--panel) 18%))}.wizard-status{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;font-weight:700}.wizard-status.todo{color:var(--sub)}.wizard-status.blocked{color:var(--err);border-color:color-mix(in oklab,var(--err) 40%,var(--line) 60%)}.wizard-status.done{color:var(--ok);border-color:color-mix(in oklab,var(--ok) 40%,var(--line) 60%)}.mini-meta{display:grid;gap:6px}.meta-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.meta-row:last-child{border-bottom:0}.card-title{margin:0;font-size:18px}.site-toolbar-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 94%,#fff 6%),var(--panel))}.site-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.site-card-actions button{padding:7px 11px;border-radius:10px;font-size:12px}.soft-note{padding:10px 12px;border:1px dashed var(--line);border-radius:12px;background:color-mix(in oklab,var(--soft) 80%,#fff 20%);color:var(--sub);line-height:1.6}.history-list{display:grid;gap:8px}.history-item{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel)}.quota-history{display:grid;gap:8px}.quota-history .history-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+    .human-title{font-size:16px;font-weight:900}.human-summary{margin-top:4px;color:var(--sub);line-height:1.45}.action-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:4px 9px;background:var(--soft);font-size:12px}.matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.matrix-row{border:1px solid var(--line);border-radius:12px;padding:10px;background:color-mix(in oklab,var(--soft) 75%,var(--panel) 25%)}.matrix-row.ok{border-color:var(--ok)}.matrix-row.warn{border-color:var(--warn)}.matrix-row.error{border-color:var(--err)}.matrix-row.info{border-color:var(--line)}.matrix-row b{display:block;margin-bottom:4px}.score-cut{display:grid;grid-template-columns:1fr auto;gap:6px;border:1px solid var(--line);border-radius:10px;padding:7px 9px;background:var(--soft)}.empty-state{border:1px dashed var(--line);border-radius:12px;padding:12px;color:var(--sub);background:color-mix(in oklab,var(--soft) 45%,transparent)}
+    .dashboard-grid{grid-template-columns:.82fr 1.15fr 1.03fr}.health-compact .score-ring{width:88px;height:88px}.health-compact .score-ring b{font-size:26px}.dashboard-card .trend-bars{max-height:210px;overflow:auto}.compact-checkin>#checkinHealth{display:block}.compact-strip{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.mini-metric{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--soft);min-width:110px}.mini-metric .k{font-size:11px;color:var(--sub)}.mini-metric .v{font-size:16px;font-weight:900}.fold-panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:0}.fold-panel>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:850;display:flex;justify-content:space-between;gap:10px;align-items:center}.fold-panel>summary::-webkit-details-marker{display:none}.fold-panel[open]>summary{border-bottom:1px solid var(--line)}.fold-panel>*:not(summary){margin:12px}.advanced-fold{background:linear-gradient(180deg,color-mix(in oklab,var(--panel) 96%,#fff 4%),color-mix(in oklab,var(--soft) 38%,var(--panel) 62%))}.site-card .site-card-actions{display:none}.site-card .hero-badges{margin-top:10px}.issue-fold{margin-top:8px}.issue-fold .site-detail-card{box-shadow:none}.site-stage .issue-fold{background:color-mix(in oklab,var(--soft) 42%,var(--panel) 58%)}.issue-primary-title{display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .pill{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;background:var(--soft)}.pill.ok{background:color-mix(in oklab,var(--ok) 45%,var(--soft) 55%)}.pill.warn{background:color-mix(in oklab,var(--warn) 45%,var(--soft) 55%)}.pill.err{background:color-mix(in oklab,var(--err) 45%,var(--soft) 55%)}
+    .sticky{position:sticky;top:0;z-index:4;background:var(--panel);padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+    .keybox{padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--soft);word-break:break-all}
+    .modal{position:fixed;inset:0;background:rgba(3,10,22,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99}.modal-body{width:min(980px,98vw);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+    #login{max-width:420px;margin:90px auto}.spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:#74b8ff;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:5px}@keyframes sp{to{transform:rotate(360deg)}}
+    @media(max-width:1199px){body{padding-bottom:112px}.wrap{display:block;width:min(100% - 24px,1600px)}.nav.global-rail{position:fixed;left:12px;right:12px;bottom:12px;top:auto;z-index:30;display:flex;overflow:auto;padding:8px}.nav.global-rail button{min-width:158px;min-height:64px}.grid2,.model-grid,.row2,.row3,.ops-grid,.dashboard-grid,.protocol-grid,.site-kpis{grid-template-columns:1fr}.site-layout{grid-template-columns:320px minmax(0,1fr) 132px}.top{grid-template-columns:1fr}.top .toolbar{justify-content:flex-start;max-width:none}.site-actions{grid-template-columns:repeat(2,minmax(80px,1fr))}.site-workbench{display:block}.detail-tab{min-height:54px}}
+    @media(max-width:760px){body{padding-bottom:118px}.wrap{width:min(100% - 16px,100%)}.stats,.health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.site-layout{grid-template-columns:1fr}.site-side-card{order:-1}.detail-tabs{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.nav.global-rail button{min-width:145px}.global-note{display:none}h1{font-size:24px}.card{padding:12px;border-radius:12px}.top .toolbar button{flex:1 1 130px}.quota-card{min-width:0;grid-template-columns:1fr}.bar-row{grid-template-columns:74px 1fr 54px}.action-panel{position:static;grid-template-columns:1fr;box-shadow:none;margin-top:8px}.tbl{max-width:100%}}
+  </style>
+</head>
+<body>
+<div id="login" class="card">
+  <h2 style="margin:0 0 8px">登录控制台</h2>
+  <p class="sub">账号密码 + 二次验证码</p>
+  <div class="row2"><input id="username" placeholder="账号"/><input id="password" type="password" placeholder="密码"/></div>
+  <div class="row2" style="margin-top:8px"><input id="otp" placeholder="二次验证码"/><button onclick="login()">登录</button></div>
+  <div id="loginMsg" class="notice">未登录</div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="wrap">
+    <main class="main-pane">
+    <div class="top">
+      <div><h1>云端控制台 v3.8.5</h1><p class="sub">数据看板优先：核心指标、趋势洞察、待处理队列与按需展开的高级诊断</p></div>
+      <div class="toolbar">
+        <button class="ghost" id="themeBtn" onclick="toggleTheme()">切换浅色</button>
+        <button class="ghost" onclick="refreshAll()">刷新全部</button>
+        <button class="ghost" onclick="inspectAllSites()">全站检测额度</button>
+        <button id="checkinBtn" onclick="runCheckin(false)">全站签到</button>
+        <button id="checkinDryBtn" class="warn" onclick="runCheckin(true)">仅检查</button>
+        <button class="danger" onclick="logout()">退出</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">站点总数</div><div class="v" id="sSites">0</div></div>
+      <div class="stat"><div class="k">启用站点</div><div class="v" id="sEnabled">0</div></div>
+      <div class="stat"><div class="k">余额可见</div><div class="v" id="sSys">0</div></div>
+      <div class="stat"><div class="k">Usage 日志</div><div class="v" id="sUse">0</div></div>
+      <div class="stat"><div class="k">未处理告警</div><div class="v" id="sAlertOpen">0</div></div>
+      <div class="stat"><div class="k">今日 Token</div><div class="v" id="sTokenToday">0</div></div>
+    </div>
+
+    <div id="notice" class="notice">就绪</div>
+
+    <section id="view-overview" class="view active card">
+      <div class="ops-grid dashboard-grid" style="margin-bottom:12px">
+        <div class="card health-compact">
+          <div class="panel-head"><h3 style="margin:0">健康评分</h3><span class="diag" id="healthSummaryText">等待数据</span></div>
+          <div style="display:flex;gap:14px;align-items:center">
+            <div class="score-ring" id="avgScoreRing" style="--score:0"><b id="avgScore">0</b></div>
+            <div style="flex:1">
+              <div class="health-grid" style="grid-template-columns:repeat(3,1fr);margin:0">
+                <div class="health-card"><div class="k">健康</div><div class="v" id="hHealthy">0</div></div>
+                <div class="health-card"><div class="k">警告</div><div class="v" id="hWarning">0</div></div>
+                <div class="health-card"><div class="k">严重</div><div class="v" id="hCritical">0</div></div>
+              </div>
+              <div class="toolbar" style="margin-top:8px">
+                <button onclick="runBulkAction('full-heal')">一键体检并修复</button>
+                <button class="ghost" onclick="runBulkAction('repair-auth')">修复登录态</button>
+                <button class="ghost" onclick="runBulkAction('quota')">刷新额度</button>
+                <button class="ghost" onclick="runBulkAction('rebuild-model-cache')">重建模型缓存</button>
+                <button class="ghost" onclick="runBulkAction('usage')">拉取 Usage</button>
+                <button class="ghost" onclick="runBulkAction('export-diagnostics')">导出协议报告</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card dashboard-card">
+          <div class="panel-head"><h3 style="margin:0">数据看板</h3><button class="ghost" onclick="refreshMetrics()">刷新</button></div>
+          <div class="trend-bars" id="trendBars"></div>
+        </div>
+        <div class="card">
+          <div class="panel-head"><h3 style="margin:0">待处理队列</h3><button class="ghost" onclick="refreshHealth(true)">刷新</button></div>
+          <div class="issue-list" id="issueList"></div>
+        </div>
+      </div>
+      <div class="card compact-checkin" style="margin-bottom:12px">
+        <div class="panel-head">
+          <h3 style="margin:0">签到摘要</h3>
+          <span id="checkinSummary" class="diag">等待最近任务</span>
+        </div>
+        <div id="checkinHealth" class="checkin-grid"></div>
+      </div>
+      <div class="grid2">
+        <div>
+          <h3 style="margin-top:0">最近任务状态</h3>
+          <div class="toolbar">
+            <label style="display:flex;align-items:center;gap:8px"><input id="schEnabled" type="checkbox" style="width:auto"/>启用每日任务</label>
+            <input id="schTime" type="time" value="09:05" style="max-width:140px"/>
+            <button class="ghost" onclick="saveSchedule()">保存计划</button>
+            <button class="ok" onclick="runNow()">立即执行</button>
+            <span id="schInfo" class="muted"></span>
+          </div>
+          <div id="progressText" class="muted" style="margin-top:8px">等待任务...</div>
+          <details class="fold-panel" style="margin-top:8px">
+            <summary>展开最近任务事件流</summary>
+            <div class="tbl" style="margin-top:8px;max-height:280px"><table><thead><tr><th>时间</th><th>步骤</th><th>状态</th><th>信息</th><th class="num">耗时</th></tr></thead><tbody id="eventsT"></tbody></table></div>
+          </details>
+        </div>
+        <div>
+          <h3 style="margin-top:0">Usage 汇总</h3>
+          <div class="sticky">
+            <div class="row3">
+              <select id="summarySite"><option value="">全部站点</option></select>
+              <select id="summaryRange"><option value="24h">最近 24 小时</option><option value="1h">最近 1 小时</option><option value="7d">最近 7 天</option><option value="custom">自定义</option></select>
+              <button class="ghost" onclick="refreshUsageSummary()">刷新汇总</button>
+            </div>
+            <div class="row2" id="summaryCustomWrap" style="margin-top:8px;display:none"><input id="summaryStart" type="datetime-local"/><input id="summaryEnd" type="datetime-local"/></div>
+          </div>
+          <div class="tbl"><table><thead><tr><th>站点</th><th class="num">Token</th><th class="num">Cost</th><th class="num">请求数</th><th class="num">错误率</th></tr></thead><tbody id="summaryT"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-sites" class="view card">
+      <details class="fold-panel advanced-fold" style="margin-bottom:10px">
+        <summary>接入与 Key 工具</summary>
+        <div class="grid2">
+          <div class="card">
+            <h3 style="margin-top:0">新站点接入向导</h3>
+            <div class="row2"><div><label>站点地址</label><input id="onUrl" placeholder="https://example.com/console"/></div><div><label>适配器</label><select id="onAdapter"><option value="new_api">new_api</option><option value="qingyi">qingyi</option><option value="onetoken">onetoken</option><option value="auth_shell">auth_shell</option></select></div></div>
+            <div class="toolbar" style="margin-top:8px"><button class="ghost" onclick="probeSite()">探测站点</button><button onclick="extractAndDraft()">提取登录态</button><button class="ok" onclick="autoOnboard()">自动接入并保存</button></div>
+            <label style="display:block;margin-top:8px">站点草稿 JSON</label><textarea id="draftJson">{}</textarea>
+            <label style="display:block;margin-top:8px">浏览器提取结果 JSON</label><textarea id="extractJson">{"token":"","cookie":"","new_api_user":""}</textarea>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">Key 结果面板</h3>
+            <div class="toolbar"><span class="pill" id="keySite">站点:-</span><span class="pill" id="keySource">来源:-</span><span class="pill" id="keyGroup">分组:-</span></div>
+            <div id="keyMasked" class="keybox mono" style="margin-top:8px">(暂无)</div>
+            <div class="toolbar" style="margin-top:8px"><button class="ghost" onclick="toggleKey()">显示 / 隐藏</button><button class="ghost" onclick="copyKey()">复制 Key</button></div>
+          </div>
+        </div>
+      </details>
+      <details class="card fold-panel advanced-fold" style="margin-bottom:10px">
+        <summary><span>高级验收 / 修复报告</span><span id="acceptanceText" class="diag">等待验收</span></summary>
+        <div class="health-grid" id="readinessSummary"></div>
+        <div class="toolbar" style="margin:8px 0"><button onclick="runAcceptanceCheck()">全站验收</button><button class="ghost" onclick="inspectAllSites()">全站检测额度</button><button class="ghost" onclick="repairSiteConfigs()">自动修复配置</button><button class="warn" onclick="repairBlockedCredentials()">修复异常登录态</button><button class="ghost" onclick="refreshReadiness(true)">刷新修复报告</button></div>
+        <div class="tbl" style="max-height:260px"><table><thead><tr><th>站点</th><th>验收</th><th>登录态</th><th>额度</th><th>阻塞原因</th><th>建议动作</th></tr></thead><tbody id="readinessT"></tbody></table></div>
+      </details>
+      <div class="toolbar" style="margin-bottom:8px">
+        <input id="siteKw" placeholder="筛选站点（名称 / 域名 / ID）" style="max-width:320px"/>
+        <label class="inline-check"><input id="siteHideDisabled" type="checkbox" checked onchange="renderSites()"/>隐藏禁用 / 重复站点</label>
+        <button class="ghost" onclick="renderSites()">应用筛选</button>
+        <button class="ghost" onclick="runBulkAction('repair-config')">修复重复 / 配置</button>
+        <button class="warn" onclick="runBulkAction('disable')">禁用当前异常站点</button>
+      </div>
+      <div id="bulkProgress" class="bulk-progress card"></div>
+      <div class="site-layout" style="margin-bottom:10px">
+        <div class="card">
+          <div class="panel-head"><h3 style="margin:0">站点健康队列</h3><span class="diag">点击查看详情</span></div>
+          <div id="siteCards" class="site-list"></div>
+        </div>
+        <div class="card site-main-card">
+          <div class="panel-head"><h3 style="margin:0">站点详情工作台</h3><span id="siteDetailTitle" class="diag">未选择</span></div>
+          <div id="siteDetail" class="muted">从左侧选择站点后，可以查看登录态、协议报告、额度来源、模型价格、Usage 与修复向导。</div>
+        </div>
+        <aside class="card site-side-card">
+          <div id="siteSideTabs" class="detail-tabs"></div>
+        </aside>
+      </div>
+      <details class="fold-panel advanced-fold">
+        <summary>高级列表模式（站点身份 / 能力 / 额度快照 / 操作）</summary>
+        <div class="tbl" style="max-height:540px;margin-top:8px"><table><thead><tr><th>站点身份</th><th>状态</th><th>能力</th><th>额度快照</th><th>操作</th></tr></thead><tbody id="siteT"></tbody></table></div>
+      </details>
+    </section>
+
+    <section id="view-models" class="view card">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+        <h3 style="margin:0">模型目录与分组联动</h3>
+        <div class="toolbar">
+          <select id="modelSiteSelect" style="min-width:220px"></select>
+          <input id="modelKw" placeholder="搜索模型" style="max-width:180px"/>
+          <select id="modelPriceFilter" style="max-width:150px"><option value="">全部价格状态</option><option value="priced">只看有计价</option><option value="missing">只看缺计价</option></select>
+          <button class="ghost" onclick="loadModelsAndGroups()">刷新当前站点</button>
+          <button class="ghost" onclick="showModelDiagnostics()">价格诊断</button>
+          <button class="ghost" onclick="downloadModelsCsv()">导出模型 CSV</button>
+          <button class="ghost" onclick="openCreateKeyModalBySelection()">创建 Key</button>
+        </div>
+      </div>
+      <p id="modelHint" class="muted">请选择站点查看模型和分组。</p>
+      <div class="model-grid">
+        <div><div class="panel-head"><h4>模型目录</h4><span class="diag">真实名称 + 计价来源 + 缺失原因</span></div><div class="tbl"><table class="model-table"><thead><tr><th>模型</th><th class="num">模型倍率</th><th class="num">分组倍率</th><th class="num">补全</th><th class="num">缓存</th><th class="num">固定价</th><th>计价说明</th></tr></thead><tbody id="modelCatalogT"></tbody></table></div></div>
+        <div><div class="panel-head"><h4>分组模型</h4><span class="diag">创建 Key 前核对</span></div><div class="tbl"><table><thead><tr><th>分组</th><th class="num">模型数</th><th>模型列表</th></tr></thead><tbody id="groupModelT"></tbody></table></div></div>
+      </div>
+    </section>
+
+    <section id="view-logs" class="view card">
+      <h3 style="margin-top:0">日志中心</h3>
+      <div class="sticky">
+        <div class="row3"><input id="logKw" placeholder="关键字"/><select id="logSite"><option value="">全部站点</option></select><select id="logRange"><option value="24h">最近 24 小时</option><option value="1h">最近 1 小时</option><option value="7d">最近 7 天</option><option value="custom">自定义</option></select></div>
+        <div class="row3" style="margin-top:8px"><select id="logParseStatus"><option value="">解析状态：全部</option><option value="success">success</option><option value="partial">partial</option><option value="failed">failed</option></select><select id="logAlertLevel"><option value="">告警级别：全部</option><option value="critical">critical</option><option value="warn">warn</option></select><div class="toolbar"><button class="ghost" onclick="refreshLogs(true)">刷新日志</button><button class="ghost" onclick="refreshUsageFromSites()">拉取站点 Usage</button><button class="ghost" onclick="downloadUsageCsv()">导出 CSV</button></div></div>
+        <div class="row2" id="logCustomWrap" style="margin-top:8px;display:none"><input id="logStart" type="datetime-local"/><input id="logEnd" type="datetime-local"/></div>
+      </div>
+      <div class="grid2">
+        <div><h4>错误聚类 / 时间线</h4><div id="logClusters" class="log-clusters"></div></div>
+        <div><h4>趋势小图</h4><div id="usageMiniChart" class="mini-chart"></div></div>
+        <div><h4>系统 API 调用日志</h4><div class="tbl"><table><thead><tr><th>时间</th><th>站点</th><th>方法</th><th>路径</th><th class="num">状态</th><th class="num">耗时</th><th>消息</th></tr></thead><tbody id="sysT"></tbody></table></div></div>
+        <div><h4>Usage / Token 消耗日志</h4><div class="tbl"><table><thead><tr><th>时间</th><th>站点</th><th>模型</th><th class="num">prompt</th><th class="num">completion</th><th class="num">total</th><th class="num">cost</th><th>解析</th><th>备注</th></tr></thead><tbody id="usageT"></tbody></table></div></div>
+      </div>
+    </section>
+
+    <section id="view-alerts" class="view card">
+      <h3 style="margin-top:0">告警中心（站内）</h3>
+      <div class="sticky">
+        <div class="row3"><select id="alertSite"><option value="">全部站点</option></select><select id="alertLevel"><option value="">级别：全部</option><option value="critical">critical</option><option value="warn">warn</option></select><select id="alertStatus"><option value="">状态：全部</option><option value="open">open</option><option value="acked">acked</option><option value="resolved">resolved</option></select></div>
+        <div class="row3" style="margin-top:8px"><select id="alertRule"><option value="">规则：全部</option><option value="daily_cost">daily_cost</option><option value="daily_tokens">daily_tokens</option><option value="failure_rate_15m">failure_rate_15m</option><option value="consecutive_failures">consecutive_failures</option></select><input id="alertKw" placeholder="关键字"/><div class="toolbar"><button class="ghost" onclick="refreshAlerts(true)">刷新告警</button><button class="ghost" onclick="ackSelectedAlerts()">确认选中</button><button class="warn" onclick="ackAllAlerts()">一键确认筛选结果</button></div></div>
+      </div>
+      <div class="tbl" style="max-height:480px"><table><thead><tr><th style="width:36px"><input type="checkbox" id="alertChkAll" onclick="toggleAlertCheckAll()"/></th><th>时间</th><th>站点</th><th>规则</th><th>级别</th><th>状态</th><th class="num">指标</th><th class="num">阈值</th><th class="num">样本</th><th>详情</th></tr></thead><tbody id="alertT"></tbody></table></div>
+    </section>
+
+    <section id="view-policies" class="view card">
+      <h3 style="margin-top:0">重试与告警策略</h3>
+      <div class="grid2">
+        <div class="card">
+          <h4 style="margin-top:0">工作区默认重试策略</h4>
+          <div class="row3"><div><label>max_attempts</label><input id="rpMaxAttempts" type="number" min="1" max="8"/></div><div><label>base_delay_s</label><input id="rpBaseDelay" type="number" min="0.1" step="0.1"/></div><div><label>multiplier</label><input id="rpMultiplier" type="number" min="1" step="0.1"/></div><div><label>max_delay_s</label><input id="rpMaxDelay" type="number" min="1"/></div><div><label>jitter_ratio</label><input id="rpJitter" type="number" min="0" max="0.8" step="0.05"/></div><div><label>timeout_ms</label><input id="rpTimeout" type="number" min="1000"/></div></div>
+          <div class="toolbar" style="margin-top:8px"><button onclick="saveRetryPolicy()">保存默认重试策略</button></div>
+          <p class="muted" style="margin:8px 0 0">可重试：网络错误、超时、408 / 409 / 425 / 429 / 5xx / 52x；不可重试：400 / 401 / 403 / 404 / 422。</p>
+        </div>
+        <div class="card">
+          <h4 style="margin-top:0">工作区告警阈值（平衡型默认）</h4>
+          <div class="row2"><div><label>daily_cost</label><input id="apDailyCost" type="number" min="0" step="0.1"/></div><div><label>daily_tokens</label><input id="apDailyTokens" type="number" min="0" step="1"/></div><div><label>failure_rate_15m</label><input id="apFailureRate" type="number" min="0" max="1" step="0.01"/></div><div><label>failure_rate_15m_min_samples</label><input id="apFailureMin" type="number" min="1"/></div><div><label>consecutive_failures</label><input id="apConsecutive" type="number" min="1"/></div><div><label>preset</label><input id="apPreset"/></div></div>
+          <div class="toolbar" style="margin-top:8px"><button onclick="saveAlertPolicy()">保存告警策略</button></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:10px">
+        <h4 style="margin-top:0">站点级重试覆盖</h4>
+        <div class="row3"><div><label>站点</label><select id="siteOverrideSite"></select></div><div style="display:flex;align-items:end"><label style="display:flex;align-items:center;gap:8px"><input id="soEnabled" type="checkbox" style="width:auto"/>启用站点覆盖</label></div><div class="toolbar" style="align-items:end"><button class="ghost" onclick="loadSiteOverrideForm()">加载当前站点</button></div></div>
+        <div class="row3" style="margin-top:8px"><div><label>max_attempts</label><input id="soMaxAttempts" type="number" min="1" max="8"/></div><div><label>base_delay_s</label><input id="soBaseDelay" type="number" min="0.1" step="0.1"/></div><div><label>multiplier</label><input id="soMultiplier" type="number" min="1" step="0.1"/></div><div><label>max_delay_s</label><input id="soMaxDelay" type="number" min="1"/></div><div><label>jitter_ratio</label><input id="soJitter" type="number" min="0" max="0.8" step="0.05"/></div><div><label>timeout_ms</label><input id="soTimeout" type="number" min="1000"/></div></div>
+        <div class="toolbar" style="margin-top:8px"><button onclick="saveSiteRetryOverride()">保存站点覆盖</button><button class="danger" onclick="clearSiteRetryOverride()">清除覆盖</button><span id="soHint" class="muted"></span></div>
+      </div>
+    </section>
+    </main>
+    <aside class="nav global-rail" aria-label="全局主导航">
+      <button type="button" id="nav-overview" class="active" onclick="switchView('overview')"><span class="global-icon">01</span><span class="global-label">总览</span><span class="global-note">指挥台</span></button>
+      <button type="button" id="nav-sites" onclick="switchView('sites')"><span class="global-icon">02</span><span class="global-label">站点</span><span class="global-note">队列 / 详情</span></button>
+      <button type="button" id="nav-models" onclick="switchView('models')"><span class="global-icon">03</span><span class="global-label">模型 Key</span><span class="global-note">计价 / 分组</span></button>
+      <button type="button" id="nav-logs" onclick="switchView('logs')"><span class="global-icon">04</span><span class="global-label">日志</span><span class="global-note">错误 / Usage</span></button>
+      <button type="button" id="nav-alerts" onclick="switchView('alerts')"><span class="global-icon">05</span><span class="global-label">告警</span><span class="global-note">阈值事件</span></button>
+      <button type="button" id="nav-policies" onclick="switchView('policies')"><span class="global-icon">06</span><span class="global-label">策略</span><span class="global-note">重试 / 告警</span></button>
+    </aside>
+  </div>
+</div>
+
+<div id="keyModal" class="modal hidden">
+  <div class="modal-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">创建 Key（分组 / 模型 / 定价）</h3><button class="ghost" onclick="closeCreateKeyModal()">关闭</button></div>
+    <div class="row2" style="margin-top:8px"><div><label>站点</label><input id="kcSite" disabled/></div><div><label>新 Key 名称</label><input id="kcName" placeholder="checkin-时间戳"/></div></div>
+    <div class="row2" style="margin-top:8px"><div><label>分组</label><select id="kcGroupSelect" onchange="onCreateGroupChanged()"></select></div><div><label>手填分组（可选）</label><input id="kcGroupManual" placeholder="为空则使用下拉"/></div></div>
+    <div class="tbl" style="max-height:280px;margin-top:8px"><table><thead><tr><th>模型 / 映射</th><th class="num">模型倍率</th><th class="num">分组倍率</th><th class="num">补全</th><th class="num">缓存</th><th>计费说明</th></tr></thead><tbody id="kcModelsBody"></tbody></table></div>
+    <div class="toolbar" style="margin-top:8px"><button onclick="submitCreateKey()">确认创建</button><span id="kcHint" class="muted">先选择分组，再创建。</span></div>
+  </div>
+</div>
+
+<div id="diagModal" class="modal hidden">
+  <div class="modal-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">模型价格诊断</h3><button class="ghost" onclick="closeDiagModal()">关闭</button></div>
+    <p id="diagSummary" class="muted">等待诊断数据...</p>
+    <div class="tbl" style="max-height:360px;margin-top:8px"><table><thead><tr><th>类型</th><th>接口</th><th class="num">状态</th><th class="num">模型</th><th class="num">有价</th><th>说明</th></tr></thead><tbody id="diagT"></tbody></table></div>
+  </div>
+</div>
+<script>
+const state={sites:[],sys:[],usage:[],summary:[],alerts:[],readiness:null,health:null,metrics:null,trends:null,checkinHistory:null,compactPanels:true,expandedSections:{},siteListMode:"cards",selectedSiteId:"",siteDetailTab:"overview",siteWorkbench:{},challengeId:"",keyPlain:"",showKey:false,currentJob:"",checkinRunning:false,createKey:{siteId:"",groups:[],selectedGroupId:""},models:[],modelMeta:null,policies:{retry:null,alerts:null},timers:{logs:null,quota:null,alerts:null}};
+const refs={};
+["username","password","otp","loginMsg","notice","themeBtn","checkinBtn","checkinDryBtn","onUrl","onAdapter","draftJson","extractJson","sSites","sEnabled","sSys","sUse","sAlertOpen","sTokenToday","avgScoreRing","avgScore","hHealthy","hWarning","hCritical","healthSummaryText","issueList","trendBars","checkinSummary","checkinHealth","schEnabled","schTime","schInfo","eventsT","progressText","summarySite","summaryRange","summaryCustomWrap","summaryStart","summaryEnd","summaryT","readinessSummary","readinessT","acceptanceText","siteKw","siteHideDisabled","bulkProgress","siteCards","siteDetailTitle","siteDetail","siteSideTabs","siteT","modelSiteSelect","modelKw","modelPriceFilter","modelHint","modelCatalogT","groupModelT","diagModal","diagSummary","diagT","logKw","logSite","logRange","logParseStatus","logAlertLevel","logCustomWrap","logStart","logEnd","logClusters","usageMiniChart","sysT","usageT","alertSite","alertLevel","alertStatus","alertRule","alertKw","alertT","alertChkAll","rpMaxAttempts","rpBaseDelay","rpMultiplier","rpMaxDelay","rpJitter","rpTimeout","apDailyCost","apDailyTokens","apFailureRate","apFailureMin","apConsecutive","apPreset","siteOverrideSite","soEnabled","soMaxAttempts","soBaseDelay","soMultiplier","soMaxDelay","soJitter","soTimeout","soHint","keySite","keySource","keyGroup","keyMasked","keyModal","kcSite","kcName","kcGroupSelect","kcGroupManual","kcModelsBody","kcHint"].forEach(id=>refs[id]=document.getElementById(id));
+const THEME_KEY="checkin_console_theme";
+const fmt=v=>v==null||v===""?"-":String(v),num=(v,f=0)=>{const n=Number(v);if(!Number.isFinite(n))return "-";return f>0?n.toFixed(f):String(Math.round(n));},compact=v=>{const n=Number(v);if(!Number.isFinite(n))return "-";return new Intl.NumberFormat("zh-CN",{maximumFractionDigits:Math.abs(n)>=100?2:6}).format(n)},pct=v=>{const n=Number(v);return Number.isFinite(n)?`${(n*100).toFixed(2)}%`:"-";},mask=v=>{const s=String(v||"");if(!s)return"";if(s.length<12)return s;return `${s.slice(0,6)}${"*".repeat(Math.max(2,s.length-10))}${s.slice(-4)}`},esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+function msg(t,ok=true){refs.notice.textContent=t;refs.notice.className="notice "+(ok?"ok":"err")}
+async function api(path,opt={}){const r=await fetch(path,{credentials:"include",headers:{"content-type":"application/json",...(opt.headers||{})},...opt});let d=null;try{d=await r.json()}catch{d={ok:false,message:"响应不是 JSON"}};if(!r.ok||d.ok===false)throw new Error((d&&d.message)||`HTTP ${r.status}`);return d}
+function switchView(view){
+  const views=["overview","sites","models","logs","alerts","policies"];
+  const id=views.includes(view)?view:"overview";
+  state.currentView=id;
+  views.forEach(v=>{
+    document.getElementById(`view-${v}`)?.classList.toggle("active",v===id);
+    document.getElementById(`nav-${v}`)?.classList.toggle("active",v===id);
+  });
+}
+function ensureSiteView(siteId,tab="overview"){
+  switchView("sites");
+  selectSite(siteId,tab);
+  setTimeout(()=>refs.siteDetail?.scrollIntoView({block:"start",behavior:"smooth"}),0);
+}
+function rangeToIso(range,startEl,endEl){
+  const now=new Date();
+  const safeIso=value=>{
+    if(!value)return "";
+    const d=new Date(value);
+    return Number.isFinite(d.getTime())?d.toISOString():"";
+  };
+  if(range==="custom")return {start:safeIso(startEl&&startEl.value),end:safeIso(endEl&&endEl.value)};
+  const hours=range==="1h"?1:range==="7d"?24*7:24;
+  return {start:new Date(now.getTime()-hours*60*60*1000).toISOString(),end:now.toISOString()};
+}
+function applyTheme(theme){const t=theme==="light"?"light":"dark";document.body.setAttribute("data-theme",t);refs.themeBtn.textContent=t==="light"?"切换深色":"切换浅色";localStorage.setItem(THEME_KEY,t)}
+function toggleTheme(){applyTheme((document.body.getAttribute("data-theme")||"dark")==="light"?"dark":"light")}
+function fillSelect(el,all=true,keep=""){const opts=[];if(all)opts.push("<option value=''>全部站点</option>");state.sites.forEach(s=>opts.push(`<option value="${esc(s.id)}">${esc(s.name||s.display_name||s.id)}</option>`));el.innerHTML=opts.join("");if(keep&&state.sites.some(s=>s.id===keep))el.value=keep;else if(!all&&state.sites[0])el.value=state.sites[0].id}
+function updateStats(){refs.sSites.textContent=state.sites.length;refs.sEnabled.textContent=state.sites.filter(s=>s.enabled).length;refs.sSys.textContent=state.sites.filter(s=>(s.quota_snapshot&&s.quota_snapshot.quota_status)==="available").length;refs.sUse.textContent=state.usage.length;refs.sAlertOpen.textContent=state.alerts.filter(a=>a.status==="open").length;refs.sTokenToday.textContent=num(state.summary.reduce((a,b)=>a+(Number(b.token_total)||0),0))}
+function issueSeverityClass(x){return x.severity==="critical"?"critical":x.severity==="warn"?"warn":"info"}
+function renderHealth(){
+  const h=state.health||{},s=h.summary||{},items=h.items||[];
+  if(!state.selectedSiteId&&items[0])state.selectedSiteId=(items.find(x=>x.status==="critical")||items.find(x=>(x.must_fix_issues||[]).length)||items.find(x=>x.status==="warning")||items[0]).site_id;
+  refs.avgScore.textContent=fmt(s.avg_score||0);
+  refs.avgScoreRing.style.setProperty("--score",String(s.avg_score||0));
+  refs.hHealthy.textContent=s.healthy||0;
+  refs.hWarning.textContent=s.warning||0;
+  refs.hCritical.textContent=s.critical||0;
+  refs.healthSummaryText.textContent=`${s.active??s.total??0} 活跃 · 必修 ${s.must_fix||0} · 可忽略 ${s.optional||0}`;
+  const issues=items.flatMap(x=>(x.must_fix_issues||[]).map(i=>({...i,site_id:x.site_id,display_name:x.display_name,score:x.score,status:x.status,human_summary:x.human_summary,human_status:x.human_status}))).filter(x=>x.code!=="duplicate_disabled"&&x.code!=="site_disabled").slice(0,12);
+  refs.issueList.innerHTML=issues.length?issues.map(i=>`<div class="issue-item ${issueSeverityClass(i)}"><div><b>${esc(i.display_name)} · ${esc(i.human_label||i.label)}</b><div class="muted">${esc(i.human_summary||i.action)}</div><div class="source-line">下一步：${esc(i.action)}</div></div><button type="button" class="ghost" onclick="ensureSiteView('${esc(i.site_id)}')">${esc(fmt(i.score))}</button></div>`).join(""):"<div class='empty-state'>当前没有必须处理项。可忽略缺口已收拢到站点详情。</div>";
+  renderSiteCards();
+}
+function renderTrendBars(){const m=state.metrics||{},top=m.top_sites||[],models=m.top_models||[];const rows=[...top.slice(0,4).map(x=>({k:x.site_id||"-",v:Number(x.cost_total||0),t:"站点 Cost"})),...models.slice(0,4).map(x=>({k:x.model||"(未知模型)",v:Number(x.token_total||0),t:"模型 Token"}))];const max=Math.max(1,...rows.map(x=>x.v));refs.trendBars.innerHTML=rows.length?rows.map(x=>`<div class="bar-row"><span title="${esc(x.t)}">${esc(String(x.k).slice(0,14))}</span><span class="bar"><i style="--w:${Math.max(3,Math.round(x.v/max*100))}%"></i></span><span class="num">${esc(compact(x.v))}</span></div>`).join(""):"<div class='muted'>暂无趋势数据</div>"}
+function checkinTone(item){
+  const title=String(item&&item.result_title||"");
+  const level=String(item&&item.result_level||"info");
+  if(level==="success"||/签到成功/.test(title))return "success";
+  if(/今日已签到|无签到接口|无需签到接口|未开放签到接口|仅检查/.test(title))return "info";
+  if(level==="warning"||/登录态|网络|挑战页|修复/.test(title))return "warning";
+  if(level==="error"||item&&item.ok===false)return "error";
+  return "info";
+}
+function renderCheckinHealth(){
+  const latest=(state.checkinHistory&&state.checkinHistory.items||[]).find(x=>x.result&&x.result.report&&Array.isArray(x.result.report.results));
+  if(!latest){
+    refs.checkinSummary.textContent="暂无最近签到任务";
+    refs.checkinHealth.innerHTML="<div class='empty-state'>还没有可展示的签到记录。点击“仅检查”可以先做一次不真实签到的健康验收。</div>";
+    return;
+  }
+  const report=latest.result.report||{},sum=report.checkin_summary_by_level||latest.checkin_summary_by_level||{};
+  refs.checkinSummary.innerHTML=`<span class="checkin-summary"><span class="pill ok">成功 ${esc(sum.success||0)}</span><span class="pill">已签到 ${esc(sum.already_checked_in||0)}</span><span class="pill">无需接口 ${esc(sum.no_interface||0)}</span><span class="pill warn">需修复 ${esc(sum.need_auth||0)}</span><span class="pill err">失败 ${esc((sum.request_failed||0)+(sum.network_error||0))}</span></span>`;
+  const rows=(report.results||[]).slice(0,12);
+  const rowHtml=rows.length?rows.map(item=>`<div class="checkin-card ${checkinTone(item)}" onclick="ensureSiteView('${esc(item.site||item.site_id||"")}')">
+    <div class="checkin-title">${esc(item.site||item.site_id||"-")} · ${esc(item.result_title||item.status||"-")}</div>
+    <div class="checkin-reason">${esc(item.result_reason||item.message||"")}</div>
+    <div class="source-line">接口：${esc(item.source_endpoint||item.evidence&&item.evidence.source_endpoint||"-")} · HTTP ${esc(fmt(item.http_status||item.evidence&&item.evidence.http_status))} · 尝试 ${esc(fmt(item.attempts||item.evidence&&item.evidence.attempts))}</div>
+    <div class="source-line">下一步：${esc(item.next_action||"保持监控")}</div>
+  </div>`).join(""):"<div class='empty-state'>最近任务没有返回分站点结果。</div>";
+  const failed=(sum.request_failed||0)+(sum.network_error||0);
+  const conclusion=failed?`需处理 ${failed} 个异常`:(sum.need_auth?`需修复登录态 ${sum.need_auth} 个`:"签到状态正常");
+  refs.checkinHealth.innerHTML=`<div class="compact-strip">
+    <div class="mini-metric"><div class="k">最近结论</div><div class="v">${esc(conclusion)}</div></div>
+    <div class="mini-metric"><div class="k">需修复</div><div class="v">${esc(sum.need_auth||0)}</div></div>
+    <div class="mini-metric"><div class="k">失败</div><div class="v">${esc(failed)}</div></div>
+  </div>
+  <details class="fold-panel" style="margin-top:10px">
+    <summary>查看分站点签到证据</summary>
+    <div class="checkin-grid">${rowHtml}</div>
+  </details>`;
+}
+async function refreshCheckinHistory(toast=false){
+  try{
+    const d=await api("/api/checkin/history");
+    state.checkinHistory=d.item;
+    renderCheckinHealth();
+    if(toast)msg("签到健康已刷新");
+  }catch(e){msg(e.message,false)}
+}
+function renderUsageMiniChart(){const rows=(state.trends&&state.trends.usage)||[];const max=Math.max(1,...rows.map(x=>Number(x.token_total||0)));refs.usageMiniChart.innerHTML=rows.length?`<div class="trend-bars">${rows.slice(-12).map(x=>`<div class="bar-row"><span>${esc(String(x.bucket||"").slice(5,13))}</span><span class="bar"><i style="--w:${Math.max(3,Math.round(Number(x.token_total||0)/max*100))}%"></i></span><span class="num">${esc(compact(x.token_total))}</span></div>`).join("")}</div>`:"<div class='empty-state'>暂无 Usage 趋势。先在站点详情或日志中心拉取 Usage。</div>"}
+async function refreshHealth(toast=false){try{const d=await api("/api/sites/health");state.health=d.item;renderHealth();if(toast)msg(`健康评分已刷新：平均 ${d.item.summary.avg_score}`)}catch(e){msg(e.message,false)}}
+function renderDashboardMetrics(){renderTrendBars();renderUsageMiniChart()}
+async function refreshMetrics(){try{const [m,t]=await Promise.all([api("/api/metrics/overview"),api("/api/metrics/trends?group=hour")]);state.metrics=m.item;state.trends=t.item;renderDashboardMetrics()}catch(e){msg(e.message,false)}}
+function budgetLabel(status){return status==="probe_budget_exhausted"?"预算耗尽":"预算正常"}
+function supportTone(status){return status==="supported"?"ok":status==="supported_but_auth_expired"?"err":"warn"}
+const SITE_DETAIL_TABS=[
+  ["overview","总览","健康 / 证据"],
+  ["protocol","协议报告","识别 / 结论"],
+  ["repair","登录态修复","Edge / OIDC"],
+  ["quota","额度","余额 / 来源"],
+  ["models","模型与价格","目录 / 计价"],
+  ["logs","Usage 与日志","时间线 / 历史"]
+];
+function detailTabLabel(tab){return({overview:"总览",protocol:"协议报告",repair:"登录态修复",quota:"额度",models:"模型与价格",logs:"Usage 与日志"})[tab]||tab}
+function renderSiteSideTabs(){
+  if(!refs.siteSideTabs)return;
+  refs.siteSideTabs.innerHTML=SITE_DETAIL_TABS.map(([tab,label,note])=>`<button type="button" class="detail-tab ${state.siteDetailTab===tab?"active":""}" onclick="setSiteDetailTab('${esc(tab)}')">${esc(label)}<span class="tab-note">${esc(note)}</span></button>`).join("");
+}
+function getWorkbench(siteId){return state.siteWorkbench[siteId]||{loading:false,protocol:null,diagnostics:null,error:""}}
+async function loadSiteWorkbench(siteId,force=false){
+  if(!siteId)return;
+  const current=getWorkbench(siteId);
+  if(current.loading)return;
+  if(!force&&current.protocol&&current.diagnostics)return;
+  state.siteWorkbench[siteId]={...current,loading:true,error:""};
+  if(state.selectedSiteId===siteId)renderSiteDetail(siteId);
+  try{
+    const [protocol,diagnostics]=await Promise.all([
+      api(`/api/sites/${encodeURIComponent(siteId)}/protocol-report`),
+      api(`/api/sites/${encodeURIComponent(siteId)}/diagnostics`)
+    ]);
+    state.siteWorkbench[siteId]={loading:false,protocol:protocol.item,diagnostics:diagnostics.item,error:""};
+  }catch(e){
+    state.siteWorkbench[siteId]={loading:false,protocol:current.protocol||null,diagnostics:current.diagnostics||null,error:e.message||String(e)};
+  }
+  if(state.selectedSiteId===siteId)renderSiteDetail(siteId);
+}
+function setSiteDetailTab(tab){
+  state.siteDetailTab=tab;
+  if(state.selectedSiteId){
+    renderSiteSideTabs();
+    renderSiteDetail(state.selectedSiteId);
+    if(["protocol","repair","logs","quota"].includes(tab))loadSiteWorkbench(state.selectedSiteId);
+  }
+}
+function renderSiteCards(){
+  const items=(state.health&&state.health.items)||[];
+  refs.siteCards.innerHTML=items.length?items.map(x=>{
+    const q=x.quota_balance==null?"余额未知":`${compact(x.quota_balance)} ${x.quota_unit||""}`;
+    const primary=[...(x.must_fix_issues||[]),...(x.optional_issues||[])][0];
+    const checkin=x.latest_checkin_status==="checked_in"?"签到成功":x.latest_checkin_status==="already_checked_in"?"今日已签到":x.latest_checkin_status==="skipped"?"无需签到接口":x.latest_checkin_status||"签到未验证";
+    return `<div class="site-card ${x.site_id===state.selectedSiteId?"active":""}" onclick="selectSite('${esc(x.site_id)}')">
+      <div class="site-head">
+        <div>
+          <div class="human-title">${esc(x.display_name||x.site_id)}</div>
+          <div class="human-summary">${esc(x.site_id)}</div>
+        </div>
+        <div class="score-mini">${esc(fmt(x.score||0))}</div>
+      </div>
+      <div class="hero-badges">
+        <span class="hero-pill ${x.status==="critical"?"err":x.status==="warning"?"warn":"ok"}">${esc(x.human_status||x.status||"-")}</span>
+        <span class="hero-pill ${x.latest_checkin_status==="checked_in"||x.latest_checkin_status==="already_checked_in"?"ok":"info"}">${esc(checkin)}</span>
+      </div>
+      <div class="site-meta" style="margin-top:10px">
+        <span>${esc(q)}</span>
+        <span>${esc(primary&&primary.human_label||primary&&primary.label||"暂无主问题")}</span>
+      </div>
+    </div>`;
+  }).join(""):"<div class='empty-state'>暂无健康数据，请先刷新健康中心。</div>";
+  if(state.selectedSiteId)renderSiteDetail(state.selectedSiteId);
+}
+function selectSite(siteId,tab){state.selectedSiteId=siteId;if(tab)state.siteDetailTab=tab;renderSiteCards();renderSiteDetail(siteId);loadSiteWorkbench(siteId)}
+function enterRepairWorkbench(siteId){
+  if(!siteId)return;
+  ensureSiteView(siteId,"repair");
+}
+async function quickRepairSite(siteId){enterRepairWorkbench(siteId)}
+function siteEntryUrl(siteId,mode="base"){
+  const site=state.sites.find(x=>x.id===siteId);
+  if(!site)return "";
+  const work=getWorkbench(siteId),protocol=work.protocol||{};
+  const entries=Array.isArray(protocol.console_entrypoints)?protocol.console_entrypoints.filter(Boolean):[];
+  const fallbackEntry=site.family==="auth_shell"||site.adapter==="auth_shell"?"/console":"";
+  const raw=mode==="console"?(entries[0]||fallbackEntry):site.base_url;
+  if(!raw)return "";
+  try{
+    return /^https?:\/\//i.test(raw)?raw:new URL(raw,site.base_url.replace(/\/?$/,"/")).toString();
+  }catch{
+    return site.base_url;
+  }
+}
+async function copyTextSafe(text){
+  try{
+    await navigator.clipboard.writeText(String(text||""));
+    return true;
+  }catch{
+    return false;
+  }
+}
+function launchExternalUrl(url,options={}){
+  const target=String(url||"").trim();
+  const preferEdge=!!options.preferEdge;
+  const allowEdgeFallback=options.allowEdgeFallback!==false;
+  if(!target)return {ok:false,mode:"invalid",url:""};
+  const openWeb=()=>{
+    try{
+      const win=window.open(target,"_blank");
+      return win!==null;
+    }catch{}
+    return false;
+  };
+  const openEdge=()=>{
+    try{
+      const edgeWin=window.open(`microsoft-edge:${target}`,"_blank");
+      return edgeWin!==null;
+    }catch{}
+    return false;
+  };
+  if(preferEdge){
+    if(openEdge())return {ok:true,mode:"edge",url:target};
+    if(openWeb())return {ok:true,mode:"web",url:target};
+  }else{
+    if(openWeb())return {ok:true,mode:"web",url:target};
+    if(allowEdgeFallback&&openEdge())return {ok:true,mode:"edge-fallback",url:target};
+  }
+  return {ok:false,mode:"blocked",url:target};
+}
+async function openSiteInBrowser(siteId,mode="base",options={}){
+  const target=siteEntryUrl(siteId,mode);
+  if(!target){msg("站点不存在或缺少可打开地址",false);return false}
+  const result=launchExternalUrl(target,options);
+  if(!result.ok){
+    const copied=await copyTextSafe(target);
+    msg(`浏览器拦截了新标签页，未能自动打开站点。${copied?"链接已复制到剪贴板。":"请手动访问下方地址。"} ${target}`,false);
+    return false;
+  }
+  const label=mode==="console"?"控制台入口":"站点页面";
+  const openNote=result.mode==="edge"||result.mode==="edge-fallback"?"已尝试通过 Edge 打开":"已打开新标签页";
+  msg(`${openNote}：${label} ${target}。完成登录、挑战页或 OIDC 回跳后，回到控制台点击“登录后立即提取”。`);
+  return true;
+}
+function openSiteLogin(siteId){
+  enterRepairWorkbench(siteId);
+  openSiteInBrowser(siteId,"base",{preferEdge:false,allowEdgeFallback:true});
+}
+function openSiteConsole(siteId){
+  enterRepairWorkbench(siteId);
+  openSiteInBrowser(siteId,"console",{preferEdge:false,allowEdgeFallback:true});
+}
+function openSiteEdge(siteId){
+  enterRepairWorkbench(siteId);
+  openSiteInBrowser(siteId,"base",{preferEdge:true,allowEdgeFallback:true});
+}
+function compactIssueEvidenceCards(){
+  const root=refs.siteDetail;
+  if(!root)return;
+  const cards=Array.from(root.querySelectorAll(".site-detail-card"));
+  const byTitle=title=>cards.find(card=>(card.querySelector(".card-title")?.textContent||"").trim()===title);
+  const primary=byTitle("必须处理");
+  if(primary){
+    const h=primary.querySelector(".card-title");
+    if(h)h.innerHTML=`<span>问题与证据</span><span class="diag">必须处理优先</span>`;
+  }
+  ["可忽略缺口","诊断矩阵","扣分证据"].forEach(title=>{
+    const card=byTitle(title);
+    if(!card||card.parentElement?.tagName==="DETAILS")return;
+    const details=document.createElement("details");
+    details.className="fold-panel issue-fold";
+    const summary=document.createElement("summary");
+    summary.textContent=title;
+    card.replaceWith(details);
+    details.appendChild(summary);
+    details.appendChild(card);
+  });
+}
+function renderSiteDetail(siteId){
+  const h=((state.health&&state.health.items)||[]).find(x=>x.site_id===siteId);
+  const s=state.sites.find(x=>x.id===siteId);
+  if(!h&&!s){refs.siteDetailTitle.textContent="未选择站点";refs.siteDetail.textContent="站点不存在";renderSiteSideTabs();return}
+  const q=(h&&h.diagnostic&&h.diagnostic.quota)||s&&s.quota_snapshot||{};
+  const must=h&&h.must_fix_issues||[];
+  const opt=h&&h.optional_issues||[];
+  const cuts=h&&h.score_breakdown||[];
+  const matrix=h&&h.diagnostic_matrix||[];
+  const auth=h&&h.auth_state||s&&s.auth_state||{};
+  const support=h&&h.support_status||s&&s.support_status||"-";
+  const sourceSummary=h&&h.source_confidence_summary||s&&s.source_confidence_summary||{};
+  const work=getWorkbench(siteId);
+  const protocol=work.protocol||null;
+  const diag=work.diagnostics||null;
+  const checkinDiag=diag&&diag.checkin_diagnostic||null;
+  const canOpenConsole=Boolean(((protocol&&protocol.console_entrypoints)||[]).length||(s&&(s.family==="auth_shell"||s.adapter==="auth_shell")));
+  refs.siteDetailTitle.textContent=`${siteId} · ${h?h.human_status||h.status:"-"}`;
+  const sourceText=Object.entries(sourceSummary).filter(([,v])=>v).map(([k,v])=>`${k}:${v}`).join(" | ")||"暂无来源置信度";
+  const actions=(h&&h.recommended_actions||[]).slice(0,5).map(a=>`<span class="action-chip">${esc(a.label||a.code)}</span>`).join("")||"<span class='action-chip'>保持监控</span>";
+  renderSiteSideTabs();
+  let content="";
+  if(state.siteDetailTab==="protocol"){
+    if(work.loading&&!protocol){
+      content="<div class='soft-note'><span class='spin'></span> 正在加载协议报告...</div>";
+    }else if(work.error&&!protocol){
+      content=`<div class='soft-note'>协议报告加载失败：${esc(work.error)}</div>`;
+    }else{
+      const endpoints=(protocol&&protocol.endpoint_matrix)||[];
+      const materials=(protocol&&protocol.credential_materials)||[];
+      const endpointText=endpoints.map(x=>`${x.message||""} ${x.path||""}`).join(" ");
+      const codeVerdict=/Too many subrequests|probe budget exhausted/i.test(endpointText)?"本次失败包含系统探测预算耗尽，需要逐站点/分阶段重试，不应判定为站点不支持。":/html|challenge|expected json/i.test(endpointText)?"目标站点返回 HTML/挑战页，优先按登录态或浏览器挑战处理。":/530|1016|timeout|network/i.test(endpointText)?"目标站点网络或 DNS 异常，属于站点侧可达性问题。":/401|403|token|未登录|权限/i.test(endpointText)?"当前凭据或 Key 权限不足，需要修复登录态/Router Key。":"当前没有看到代码预算类错误，按协议矩阵逐项判断即可。";
+      content=`<div class="detail-body-grid">
+        <div class="site-detail-card">
+          <div class="panel-head"><h4 class="card-title">失败归因</h4><span class="diag">是不是我们的代码造成</span></div>
+          <div class="human-summary">${esc(codeVerdict)}</div>
+        </div>
+        <div class="protocol-grid">
+          <div class="protocol-box">
+            <h5>协议结论</h5>
+            <div class="human-title">${esc(protocol&&protocol.support_status||support)}</div>
+            <div class="human-summary">${esc(protocol&&protocol.adapter_recommendation||"")}</div>
+            <div class="hero-badges" style="margin-top:8px">
+              <span class="hero-pill ${supportTone(protocol&&protocol.support_status||support)}">${esc(protocol&&protocol.family||s&&s.family||"-")}</span>
+              <span class="hero-pill ${protocol&&protocol.probe_budget&&protocol.probe_budget.status==="probe_budget_exhausted"?"warn":"ok"}">${esc(budgetLabel(protocol&&protocol.probe_budget&&protocol.probe_budget.status||"ok"))}</span>
+            </div>
+          </div>
+          <div class="protocol-box">
+            <h5>识别证据</h5>
+            <div class="mini-meta">
+              <div class="meta-row"><span>Shell</span><b>${esc(protocol&&protocol.shell_detection&&protocol.shell_detection.shell_type||s&&s.site_shell_type||"-")}</b></div>
+              <div class="meta-row"><span>标题</span><b>${esc(protocol&&protocol.shell_detection&&protocol.shell_detection.title||s&&s.display_name||"-")}</b></div>
+              <div class="meta-row"><span>传输链</span><b>${esc(protocol&&protocol.transport_chain&&protocol.transport_chain.state||"-")}</b></div>
+              <div class="meta-row"><span>控制台入口</span><b>${esc(((protocol&&protocol.console_entrypoints)||[])[0]||"-")}</b></div>
+            </div>
+          </div>
+          <div class="protocol-box">
+            <h5>凭据状态</h5>
+            <div class="human-summary">${esc(protocol&&protocol.auth_state&&protocol.auth_state.label||auth.label||"-")}</div>
+            <div class="hero-badges" style="margin-top:8px">
+              ${materials.length?materials.map(m=>`<span class="hero-pill ok">${esc(m.key||m.type||"material")}</span>`).join(""):"<span class='hero-pill warn'>未提取到可用材料</span>"}
+            </div>
+            <div class="soft-note" style="margin-top:8px">这里只显示材料类型和有效性，不显示真实 cookie、token 或 session 值。</div>
+          </div>
+          <div class="protocol-box">
+            <h5>推荐动作</h5>
+            <div class="wizard-steps">
+              ${((protocol&&protocol.repair_steps)||[]).slice(0,4).map(step=>`<div class="history-item"><b>${esc(step.title||"下一步")}</b><div class="muted">${esc(step.detail||"")}</div></div>`).join("")||"<div class='soft-note'>暂无推荐动作</div>"}
+            </div>
+          </div>
+        </div>
+        <div class="site-detail-card">
+          <div class="panel-head">
+            <h4 class="card-title">探测矩阵</h4>
+            <button class="ghost" onclick="exportProtocolReport('${esc(siteId)}')">导出 JSON</button>
+          </div>
+          <div class="endpoint-list">
+            ${endpoints.length?endpoints.map(ep=>`<div class="endpoint-item">
+              <div class="endpoint-head">
+                <span class="endpoint-path">${esc(ep.path||"-")}</span>
+                <span class="hero-pill ${ep.ok?"ok":ep.status===404?"warn":"err"}">${esc(fmt(ep.status)||"-")}</span>
+              </div>
+              <div class="muted" style="margin-top:6px">${esc(ep.message||"")}</div>
+              <div class="source-line">来源：${esc(ep.source_level||"-")} · ${ep.is_json?"JSON":"HTML"} · 解析数 ${esc(fmt(ep.parse_count||ep.parsed_count||0))}</div>
+            </div>`).join(""):"<div class='soft-note'>当前还没有接口探测记录。</div>"}
+          </div>
+        </div>
+      </div>`;
+    }
+  }else if(state.siteDetailTab==="repair"){
+    const steps=(protocol&&protocol.repair_steps)||[];
+    const browser=(protocol&&protocol.bridge_status&&protocol.bridge_status.browser)||"Edge";
+    const hasMaterials=protocol&&protocol.bridge_status&&protocol.bridge_status.has_materials;
+    content=`<div class="detail-body-grid">
+      <div class="site-detail-card">
+        <div class="panel-head">
+          <h4 class="card-title">登录态修复向导</h4>
+          <span class="diag">优先复用 ${esc(browser)} 中已登录的标签页</span>
+        </div>
+        <div class="soft-note">请先打开目标站点并保持已登录状态。如果这是 qingyi 或 auth_shell 站点，完成挑战页或 OIDC 授权回跳后，再回到这里点击“登录后立即提取”。</div>
+        <div class="wizard-steps" style="margin-top:12px">
+          ${steps.length?steps.map(step=>`<div class="wizard-card">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+              <h5>${esc(step.title||"步骤")}</h5>
+              <span class="wizard-status ${esc(step.status||"todo")}">${esc(step.status==="blocked"?"仍阻塞":step.status==="done"?"已完成":"待操作")}</span>
+            </div>
+            <div class="muted">${esc(step.detail||"")}</div>
+          </div>`).join(""):"<div class='soft-note'>协议报告加载后，这里会显示更具体的 Edge / OIDC 操作步骤。</div>"}
+        </div>
+        <div class="detail-action-row" style="margin-top:12px">
+          <button class="ghost" onclick="openSiteLogin('${esc(siteId)}')">打开站点</button>
+          <button class="ghost" onclick="openSiteEdge('${esc(siteId)}')">在 Edge 打开</button>
+          ${canOpenConsole?`<button class="ghost" onclick="openSiteConsole('${esc(siteId)}')">打开控制台</button>`:""}
+          <button onclick="repairSiteCredentials('${esc(siteId)}')">登录后立即提取</button>
+          <button class="ghost" onclick="runBulkAction('repair-browser-auth')">批量浏览器修复提示</button>
+          <button class="ghost" onclick="loadSiteWorkbench('${esc(siteId)}',true)">重新验证修复状态</button>
+        </div>
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-box">
+          <h5>当前登录态</h5>
+          <div class="human-title">${esc(auth.label||"-")}</div>
+          <div class="muted">${esc(auth.hint||"")}</div>
+          <div class="source-line" style="margin-top:8px">token 过期时间：${esc(auth.token_expires_at||"未提供")}</div>
+        </div>
+        <div class="protocol-box">
+          <h5>浏览器桥接</h5>
+          <div class="human-summary">${work.error?esc(work.error):"桥接提取会优先从 Edge 当前已登录标签页中读取 cookie / token / session 材料。"}</div>
+          <div class="hero-badges" style="margin-top:8px">
+            <span class="hero-pill ok">Edge 优先</span>
+            <span class="hero-pill ${hasMaterials?"ok":"warn"}">${hasMaterials?"已识别材料":"待重新提取"}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }else if(state.siteDetailTab==="quota"){
+    const history=(diag&&diag.quota_history)||[];
+    content=`<div class="detail-body-grid">
+      <div class="site-kpis">
+        <div class="site-kpi">
+          <div class="k">可用余额</div>
+          <div class="v">${esc(compact(q.display_balance??q.balance))}<span class="qunit">${esc(q.display_unit||q.currency||"")}</span></div>
+          <div class="raw">${esc(q.conversion_note||q.quota_parse_note||"暂无换算说明")}</div>
+        </div>
+        <div class="site-kpi">
+          <div class="k">今日</div>
+          <div class="v">${esc(compact(q.display_today_spend??q.today_spend))}</div>
+          <div class="raw">来源：${esc(q.quota_source||q.source||"-")}</div>
+        </div>
+        <div class="site-kpi">
+          <div class="k">总消耗</div>
+          <div class="v">${esc(compact(q.display_total_spend??q.total_spend))}</div>
+          <div class="raw">计费样式：${esc(q.billing_style||"-")}</div>
+        </div>
+        <div class="site-kpi">
+          <div class="k">探测预算</div>
+          <div class="v">${esc(budgetLabel(s&&s.probe_budget_status||"ok"))}</div>
+          <div class="raw">${esc(sourceText)}</div>
+        </div>
+      </div>
+      <div class="site-detail-card">
+        <div class="panel-head">
+          <h4 class="card-title">余额来源与快照历史</h4>
+          <button class="ghost" onclick="detectAndQuota('${esc(siteId)}')">重新验收额度</button>
+        </div>
+        <div class="quota-history">
+          ${history.length?history.slice(0,12).map(row=>`<div class="history-item"><div><b>${esc(compact(row.display_balance))} ${esc(row.display_unit||"")}</b><div class="muted">${esc(row.source||"-")} · ${esc(row.billing_style||"-")}</div></div><div class="muted">${esc(fmt(row.created_at))}</div></div>`).join(""):"<div class='soft-note'>还没有额度历史快照。重新执行“检测额度”后会在这里累积。</div>"}
+        </div>
+      </div>
+    </div>`;
+  }else if(state.siteDetailTab==="models"){
+    content=`<div class="detail-body-grid"><div class="site-detail-card"><div class="panel-head"><h4 class="card-title">模型与价格工作台</h4><div class="detail-action-row"><button onclick="showSiteModels('${esc(siteId)}')">打开模型页</button><button class="ghost" onclick="showSiteGroups('${esc(siteId)}')">查看分组模型</button><button class="ghost" onclick="showModelDiagnostics()">价格诊断</button></div></div><div class="soft-note">这里不会再把纯数字渠道 ID 当成模型名。只返回渠道 / 账号映射时，会明确显示为映射关系，不伪造倍率和计价。</div><div class="protocol-grid" style="margin-top:12px"><div class="protocol-box"><h5>目录状态</h5><div class="human-title">${esc(fmt(h&&h.model_count))}</div><div class="muted">模型总数</div></div><div class="protocol-box"><h5>计价状态</h5><div class="human-title">${esc(fmt(h&&h.priced_model_count))}</div><div class="muted">已识别价格 / 倍率</div></div></div></div></div>`;
+  }else if(state.siteDetailTab==="logs"){
+    const logs=(diag&&diag.recent_logs)||[];
+    const authHistory=(diag&&diag.auth_refresh_history)||[];
+    content=`<div class="detail-body-grid"><div class="protocol-grid"><div class="site-detail-card"><div class="panel-head"><h4 class="card-title">最近系统调用</h4><button class="ghost" onclick="refreshUsageFromSite('${esc(siteId)}')">拉 Usage</button></div><div class="history-list">${logs.length?logs.slice(0,12).map(row=>`<div class="history-item"><div style="display:flex;justify-content:space-between;gap:8px"><b class="mono">${esc(row.path||"-")}</b><span class="hero-pill ${row.ok?"ok":"err"}">${esc(fmt(row.status)||"-")}</span></div><div class="muted">${esc(row.message||"")}</div><div class="source-line">${esc(fmt(row.created_at))} · ${esc(fmt(row.elapsed_ms))}ms</div></div>`).join(""):"<div class='soft-note'>暂无最近系统日志。</div>"}</div></div><div class="site-detail-card"><div class="panel-head"><h4 class="card-title">最近凭据刷新</h4><button class="ghost" onclick="loadSiteWorkbench('${esc(siteId)}',true)">刷新</button></div><div class="history-list">${authHistory.length?authHistory.slice(0,10).map(row=>`<div class="history-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(row.success?"刷新成功":"刷新失败")}</b><span class="hero-pill ${row.success?"ok":"err"}">${esc(fmt(row.created_at))}</span></div><div class="muted">${esc(row.message||"")}</div></div>`).join(""):"<div class='soft-note'>该站点最近没有自动刷新记录。</div>"}</div></div></div></div>`;
+  }else{
+    content=`<div class="detail-body-grid"><div class="site-stage-head"><div class="site-summary-stack"><div class="human-title">${esc(h&&h.human_status||"-")} · ${esc(fmt(h&&h.score))} 分</div><div class="human-summary">${esc(h&&h.human_summary||"")}</div><div class="hero-badges">${actions}<span class="hero-pill ${supportTone(support)}">${esc(support)}</span>${s&&s.site_shell_type?`<span class="hero-pill warn">${esc(s.site_shell_type)}</span>`:""}<span class="hero-pill ${s&&s.probe_budget_status==="probe_budget_exhausted"?"warn":"ok"}">${esc(budgetLabel(s&&s.probe_budget_status||"ok"))}</span></div></div><div class="detail-action-row"><button onclick="detectAndQuota('${esc(siteId)}')">检测额度</button><button class="ghost" onclick="enterRepairWorkbench('${esc(siteId)}')">登录态修复</button><button class="ghost" onclick="runSingle('${esc(siteId)}',true)">仅检查签到</button><button class="ghost" onclick="runSingle('${esc(siteId)}',false)">单站签到</button><button class="ghost" onclick="exportSiteDiagnostics('${esc(siteId)}')">导出诊断</button></div></div><div class="site-kpis"><div class="site-kpi"><div class="k">余额</div><div class="v">${esc(compact(q.display_balance??q.balance))}<span class="qunit">${esc(q.display_unit||q.currency||"")}</span></div><div class="raw">${esc(q.conversion_note||q.quota_parse_note||"暂无可解析余额")}</div></div><div class="site-kpi"><div class="k">模型 / 有价</div><div class="v">${esc(fmt(h&&h.model_count))} / ${esc(fmt(h&&h.priced_model_count))}</div><div class="raw">${h&&h.priced_model_count?"已合并计价字段":"价格接口未开放或当前权限不足"}</div></div><div class="site-kpi"><div class="k">登录态</div><div class="v">${esc(auth.label||"-")}</div><div class="raw">${esc(auth.hint||"")}</div></div><div class="site-kpi"><div class="k">最近探测</div><div class="v">${esc(fmt(h&&h.last_probe_at))}</div><div class="raw">${esc(sourceText)}</div></div></div><div class="site-detail-card"><div class="panel-head"><h4 class="card-title">签到诊断</h4><span class="hero-pill ${checkinDiag?checkinTone(checkinDiag):"info"}">${esc(checkinDiag&&checkinDiag.result_title||h&&h.latest_checkin_status||"暂无记录")}</span></div><div class="human-summary">${esc(checkinDiag&&checkinDiag.result_reason||h&&h.latest_checkin_message||"签到状态现在与模型、Usage、额度诊断分开展示。")}</div><div class="source-line">接口：${esc(checkinDiag&&checkinDiag.evidence&&checkinDiag.evidence.source_endpoint||"-")} · HTTP ${esc(fmt(checkinDiag&&checkinDiag.evidence&&checkinDiag.evidence.http_status))} · 尝试 ${esc(fmt(checkinDiag&&checkinDiag.evidence&&checkinDiag.evidence.attempts))}</div><div class="detail-action-row" style="margin-top:10px"><button class="ghost" onclick="runSingle('${esc(siteId)}',true)">仅检查签到</button><button class="ghost" onclick="runSingle('${esc(siteId)}',false)">单站签到</button><button class="ghost" onclick="enterRepairWorkbench('${esc(siteId)}')">修复登录态</button></div><div class="source-line" style="margin-top:8px">下一步：${esc(checkinDiag&&checkinDiag.next_action||"保持每日任务")}</div></div><div class="protocol-grid"><div class="site-detail-card"><h4 class="card-title">必须处理</h4><div class="issue-list" style="margin-top:10px">${must.length?must.map(i=>`<div class="issue-item ${issueSeverityClass(i)}"><div><b>${esc(i.human_label||i.label)}</b><div class="muted">${esc(i.detail||i.action)}</div><div class="source-line">下一步：${esc(i.action)}</div></div><span class="pill err">-${esc(fmt(i.score_penalty))}</span></div>`).join(""):"<div class='empty-state'>当前没有必须处理项。</div>"}</div></div><div class="site-detail-card"><h4 class="card-title">可忽略缺口</h4><div class="issue-list" style="margin-top:10px">${opt.length?opt.map(i=>`<div class="issue-item info"><div><b>${esc(i.human_label||i.label)}</b><div class="muted">${esc(i.detail||i.action)}</div></div><span class="pill warn">${esc(i.code)}</span></div>`).join(""):"<div class='empty-state'>暂无可忽略缺口。</div>"}</div></div></div><div class="site-detail-card"><h4 class="card-title">诊断矩阵</h4><div class="matrix" style="margin-top:10px">${matrix.length?matrix.map(m=>`<div class="matrix-row ${esc(m.status)}"><b>${esc(m.title)}</b><div class="muted">${esc(m.evidence||"")}</div><div class="source-line">建议：${esc(m.next_action||"保持监控")}</div></div>`).join(""):"<div class='empty-state'>暂无诊断矩阵。</div>"}</div></div><div class="site-detail-card"><h4 class="card-title">扣分证据</h4><div class="issue-list" style="margin-top:10px">${cuts.length?cuts.map(c=>`<div class="score-cut"><span>${esc(c.label)}<div class="muted">${esc(c.evidence||"")}</div></span><b>-${esc(fmt(c.penalty))}</b></div>`).join(""):"<div class='empty-state'>没有扣分项。</div>"}</div></div></div>`;
+  }
+  refs.siteDetail.innerHTML=`<div class="site-workbench"><div class="site-stage">${work.error&&state.siteDetailTab!=="protocol"&&state.siteDetailTab!=="repair"?`<div class="soft-note">附加诊断加载失败：${esc(work.error)}</div>`:""}${content}</div></div>`;
+  if(state.siteDetailTab==="overview")compactIssueEvidenceCards();
+}
+function renderReadiness(){
+  const r=state.readiness||{},s=r.summary||{};
+  refs.acceptanceText.textContent=r.completed?"全站验收完成":"仍有站点待修复";
+  refs.acceptanceText.className=`diag ${r.completed?"ready-ok":"ready-bad"}`;
+  refs.readinessSummary.innerHTML=[["总站点",s.total||0],["已就绪",s.ready||0],["需修复",s.blocked||0],["额度可见",s.quota_available||0]].map(x=>`<div class="health-card"><div class="k">${x[0]}</div><div class="v">${esc(fmt(x[1]))}</div></div>`).join("");
+  const items=r.items||[];
+  refs.readinessT.innerHTML=items.length?items.map(x=>{
+    const bad=x.blockers||[];
+    const needAuth=bad.some(b=>String(b.code||"").includes("credentials")||b.code==="auth_warning");
+    return `<tr>
+      <td><div class="model-title">${esc(x.display_name||x.site_id)}</div><div class="model-id mono">${esc(x.site_id)}</div></td>
+      <td>${x.ready?'<span class="ready-ok">通过</span>':'<span class="ready-bad">待修复</span>'}</td>
+      <td>${esc(x.credential_status&&x.credential_status.label||"-")}</td>
+      <td>${esc(x.quota_status||"-")}<div class="muted mono">${esc(x.quota_source||"")}</div></td>
+      <td>${bad.length?bad.map(b=>`<span class="blocker">${esc(b.label||b.code)}</span>`).join(""):"-"}</td>
+      <td>${esc(bad[0]&&bad[0].action||"可执行任务")}<div class="toolbar" style="margin-top:4px"><button class="ghost" onclick="detectAndQuota('${esc(x.site_id)}')">检测</button>${needAuth?`<button class="warn" onclick="enterRepairWorkbench('${esc(x.site_id)}')">修复登录态</button>`:""}</div></td>
+    </tr>`;
+  }).join(""):"<tr><td colspan='6' class='muted'>暂无验收数据</td></tr>";
+}
+async function refreshReadiness(toast=false){
+  try{
+    const d=await api("/api/sites/readiness");
+    state.readiness=d.item;
+    renderReadiness();
+    if(toast)msg(d.item.completed?"全站验收状态：已完成":"修复报告已刷新：仍有站点待处理",!!d.item.completed);
+  }catch(e){msg(e.message,false)}
+}
+async function repairBlockedCredentials(){
+  const items=(state.readiness&&state.readiness.items)||state.sites.map(s=>({site_id:s.id,credential_status:s.credential_status,blockers:[]}));
+  const targets=items.filter(x=>{
+    const st=x.credential_status&&x.credential_status.status;
+    return ["missing","expired","auth_warning"].includes(st)||(x.blockers||[]).some(b=>String(b.code||"").includes("credentials")||b.code==="auth_warning");
+  });
+  if(!targets.length){msg("没有需要修复登录态的站点");return}
+  msg(`已定位 ${targets.length} 个需要修复登录态的站点。请先打开并登录目标站点，再在右侧修复工作台执行“登录后立即提取”。`);
+  ensureSiteView(targets[0].site_id,"repair");
+}
+async function repairSiteConfigs(){
+  try{
+    const d=await api("/api/sites/maintenance/repair",{method:"POST",body:JSON.stringify({})});
+    const actions=d.item.actions||[];
+    msg(actions.length?`已自动修复 ${actions.length} 项配置：${actions.map(a=>`${a.site_id}:${a.action}`).join(" | ")}`:"没有发现需要修复的配置");
+    await refreshSites();
+    await refreshReadiness(false);
+  }catch(e){msg(e.message,false)}
+}
+async function runAcceptanceCheck(){
+  try{
+    msg("正在执行全站验收：会先检测额度，再执行真实签到任务");
+    await inspectAllSites();
+    const d=await api("/api/checkin/run",{method:"POST",body:JSON.stringify({dry_run:false,enabled_only:true})});
+    const sum=d.item.report&&d.item.report.summary||{};
+    await Promise.all([refreshSites(),refreshReadiness(false),refreshLogs(false)]);
+    msg(`验收结束：成功 ${sum.ok||0}，跳过 ${sum.skipped||0}，失败 ${sum.failed||0}`,(sum.failed||0)===0&&state.readiness&&state.readiness.completed);
+  }catch(e){msg(e.message,false)}
+}
+function ratio(v){return v==null||v===""?'<span class="ratio empty">未提供</span>':`<span class="ratio">${esc(fmt(v))}</span>`}
+function statusLabel(st){const map={available:["ok","可用"],auth_failed:["err","鉴权失败"],parse_failed:["warn","解析失败"],network_failed:["err","网络失败"],unsupported:["warn","未提供"]};const x=map[st]||["warn",fmt(st||"未知")];return `<span class="pill ${x[0]}">${x[1]}</span>`}
+function sourceText(fields=[]){return (fields||[]).filter(Boolean).slice(0,8).join(" · ")||"未返回来源字段"}
+function priceBadge(x){const c=x.price_confidence||"missing",src=x.price_source||"站点未开放";return `<span class="price-source ${esc(c)}">${esc(src)}</span>`}
+function priceNote(x){
+  const has=[x.model_ratio,x.group_ratio,x.user_group_ratio,x.completion_ratio,x.cache_ratio,x.fixed_price,x.price,x.input_price,x.output_price,x.cached_price,x.cache_read_price,x.cache_write_price,x.per_request_price].some(v=>v!=null&&v!=="");
+  const txt=x.effective_price_text||x.price_text||"";
+  const platform=[x.platform,x.billing_mode].filter(Boolean).join(" / ");
+  if(has)return `${priceBadge(x)}${platform?`<div class="source-line">${esc(platform)}</div>`:""}<div class="price-note">${esc(txt&&txt!=="-"?txt:"已解析计价")}</div>`;
+  const why=x.missing_price_reason||((sourceText(x.source_fields||[]).includes("channel:")||sourceText(x.source_fields||[]).includes("channel_mapping"))?"接口只暴露了模型目录或渠道映射，没有给出倍率字段":"站点没有在已知接口返回倍率或价格字段");
+  return `${priceBadge(x)}${platform?`<div class="source-line">${esc(platform)}</div>`:""}<div class="price-note empty">未提供</div><div class="source-line">${esc(why)}</div>`;
+}
+function quotaCard(q,st,note){
+  if(!q)return `<div class="quota-card"><div class="qmetric full qfail"><div class="k">额度状态</div><div class="v">${statusLabel(st)}</div><div class="muted">${esc(note||"暂无可解析额度；通常是缺少 cookie/token、接口不支持，或站点返回了 HTML / 404")}</div></div></div>`;
+  const unit=q.display_unit||q.currency||"站点计费单位";
+  const bal=q.display_balance??q.balance;
+  const today=q.display_today_spend??q.today_spend;
+  const total=q.display_total_spend??q.total_spend;
+  return `<div class="quota-card">
+    <div class="qmetric"><div class="k">余额</div><div class="v">${esc(compact(bal))}</div><div class="muted">${esc(unit)}</div></div>
+    <div class="qmetric"><div class="k">今日</div><div class="v">${esc(compact(today))}</div><div class="muted">${esc(q.quota_source||q.source||"-")}</div></div>
+    <div class="qmetric full ${String(st||q.quota_status||"")==="available"?"":"qwarn"}"><div class="k">说明</div><div class="v">${statusLabel(st||q.quota_status||"available")}</div><div class="muted">${esc(q.conversion_note||note||q.quota_parse_note||"解析成功")}</div></div>
+    <div class="qmetric full"><div class="k">已用 / 总额</div><div class="v">${esc(compact(q.display_used??q.used??q.total_used??"-"))} / ${esc(compact(total))}</div><div class="muted">raw quota: ${esc(compact(q.raw_quota??q.raw_balance??q.balance_raw??"-"))}</div></div>
+  </div>`;
+}
+function credBadge(s){const c=s.credential_status||{status:"unknown",label:"未知登录态",hint:""};return `<div class="cred ${esc(c.status)}" title="${esc(c.hint||"")}">${esc(c.label||c.status)}</div>`}
+function capCell(c){const item=(k,t)=>`<div class="cap ${c&&c[k]?"ok":"err"}">${t}</div>`;return `<div class="cap-grid">${item("can_checkin","签到")}${item("can_manage_token","Key")}${item("can_read_quota","额度")}${item("can_read_models","模型")}${item("can_read_usage","Usage")}${item("can_manage_channel","渠道")}</div>`}
+function modelRow(x){return `<tr><td><div class="model-title">${esc(x.name||x.id)}</div><div class="model-id mono">${esc(x.id||"")}</div>${x.platform?`<div class="source-line">${esc(x.platform)}</div>`:""}</td><td class="num">${ratio(x.model_ratio)}</td><td class="num">${ratio(x.group_ratio||x.user_group_ratio)}</td><td class="num">${ratio(x.completion_ratio||x.output_price)}</td><td class="num">${ratio(x.cache_ratio||x.cache_read_price||x.cache_write_price)}</td><td class="num">${ratio(x.fixed_price||x.input_price||x.per_request_price)}</td><td>${priceNote(x)}<div class="source-line">${esc(sourceText(x.source_fields||x.diagnostic_sources||[]))}</div></td></tr>`}
+function createModelRow(m){const mapped=m.mapping_type&&m.mapping_type!=="model";return `<tr><td><div class="model-title">${esc(m.name||m.id)}${mapped?` <span class="pill warn">${esc(m.mapping_type)}映射</span>`:""}</div><div class="model-id mono">${esc(m.id||"")}</div>${m.mapping_ids&&m.mapping_ids.length?`<div class="source-line">映射ID: ${esc(m.mapping_ids.slice(0,8).join(", "))}</div>`:""}</td><td class='num'>${ratio(m.model_ratio)}</td><td class='num'>${ratio(m.group_ratio||m.user_group_ratio)}</td><td class='num'>${ratio(m.completion_ratio)}</td><td class='num'>${ratio(m.cache_ratio)}</td><td>${priceNote(m)}</td></tr>`}
+function applyRangeToggle(){refs.logCustomWrap.style.display=refs.logRange.value==="custom"?"grid":"none";refs.summaryCustomWrap.style.display=refs.summaryRange.value==="custom"?"grid":"none"}
+function logQuery(){const q=new URLSearchParams({limit:"200"});if(refs.logKw.value.trim())q.set("q",refs.logKw.value.trim());if(refs.logSite.value)q.set("site_id",refs.logSite.value);if(refs.logParseStatus.value)q.set("parse_status",refs.logParseStatus.value);if(refs.logAlertLevel.value)q.set("alert_level",refs.logAlertLevel.value);const r=rangeToIso(refs.logRange.value,refs.logStart,refs.logEnd);if(r.start)q.set("start",r.start);if(r.end)q.set("end",r.end);return q}
+function summaryQuery(){const q=new URLSearchParams();if(refs.summarySite.value)q.set("site_id",refs.summarySite.value);const r=rangeToIso(refs.summaryRange.value,refs.summaryStart,refs.summaryEnd);if(r.start)q.set("start",r.start);if(r.end)q.set("end",r.end);return q}
+async function login(){
+  const u=refs.username.value.trim(),p=refs.password.value,code=refs.otp.value.trim();
+  try{
+    if(!state.challengeId){
+      const a=await api("/api/auth/login/request",{method:"POST",body:JSON.stringify({username:u,password:p})});
+      state.challengeId=a.item.challenge_id;
+      refs.loginMsg.textContent="Password accepted, enter OTP";
+      return;
+    }
+    await api("/api/auth/login/verify",{method:"POST",body:JSON.stringify({challenge_id:state.challengeId,code})});
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    msg("Login success");
+    await refreshAll();
+    startAutoRefresh();
+  }catch(e){
+    refs.loginMsg.textContent=e.message;
+    state.challengeId="";
+  }
+}
+async function autoLogin(){try{await api("/api/auth/me");document.getElementById("login").classList.add("hidden");document.getElementById("app").classList.remove("hidden");await refreshAll();startAutoRefresh()}catch{}}
+async function logout(){await api("/api/auth/logout",{method:"POST"});location.reload()}
+function startAutoRefresh(){if(state.timers.logs)clearInterval(state.timers.logs);if(state.timers.quota)clearInterval(state.timers.quota);if(state.timers.alerts)clearInterval(state.timers.alerts);state.timers.logs=setInterval(()=>refreshLogs(false),12000);state.timers.quota=setInterval(refreshSiteQuotaFast,14000);state.timers.alerts=setInterval(()=>refreshAlerts(false),18000)}
+async function refreshAll(){await Promise.all([refreshSites(),refreshSchedule(),refreshPolicies()]);await Promise.all([refreshLogs(false),refreshUsageSummary(),refreshAlerts(false),refreshSiteQuotaFast(),refreshReadiness(false),refreshHealth(false),refreshMetrics(),refreshCheckinHistory(false)])}
+async function refreshSites(){const d=await api("/api/sites");state.sites=d.item.items||[];renderSites();fillSelect(refs.logSite,true,refs.logSite.value);fillSelect(refs.alertSite,true,refs.alertSite.value);fillSelect(refs.summarySite,true,refs.summarySite.value);fillSelect(refs.modelSiteSelect,false,refs.modelSiteSelect.value);fillSelect(refs.siteOverrideSite,false,refs.siteOverrideSite.value);if(refs.modelSiteSelect.value)await loadModelsAndGroups(false);loadSiteOverrideForm();updateStats()}
+function renderSites(){
+  const kw=refs.siteKw.value.trim().toLowerCase();
+  const hide=refs.siteHideDisabled&&refs.siteHideDisabled.checked;
+  let items=state.sites;
+  if(hide)items=items.filter(s=>s.enabled&&!s.duplicate_replaced_by);
+  if(kw)items=items.filter(s=>`${s.display_name||s.name} ${s.id} ${s.base_url}`.toLowerCase().includes(kw));
+  refs.siteT.innerHTML=items.map(s=>{
+    const c=s.capabilities_cache||{},q=s.quota_snapshot||null,ps=s.profile_summary||{},rep=s.duplicate_replaced_by;
+    return `<tr class="site-row ${rep?"replaced":""}">
+      <td>
+        <div class="site-name">${esc(s.display_name||s.name||s.id)}</div>
+        <div class="site-meta"><span class="pill">${esc(s.name_source||"saved")}</span><span class="pill">${esc(s.id)}</span>${rep?`<span class="pill warn">已被 ${esc(rep)} 替换</span>`:""}</div>
+        ${credBadge(s)}
+        <div class="muted">${esc(ps.username||ps.email||ps.plan||"")}</div>
+        <div class="muted mono site-url">${esc(s.base_url)}</div>
+      </td>
+      <td>
+        <span class="pill">${esc(s.family||s.adapter)}</span>
+        <div style="margin-top:6px"><span class="pill ${s.enabled?"ok":"err"}">${s.enabled?"启用":"禁用"}</span></div>
+        <div class="muted">探测: ${esc(fmt(s.last_probe_at))}</div>
+      </td>
+      <td id="cap_${esc(s.id)}">${capCell(c)}</td>
+      <td id="quota_${esc(s.id)}">${quotaCard(q,q&&q.quota_status||"",q&&q.quota_parse_note)}</td>
+      <td>
+        <details class="action-menu">
+          <summary>操作</summary>
+          <div class="action-panel">
+            <button class="ghost" onclick="detectAndQuota('${esc(s.id)}')">检测额度</button>
+            <button class="warn" onclick="enterRepairWorkbench('${esc(s.id)}')">修复登录态</button>
+            <button class="ghost" onclick="showSiteModels('${esc(s.id)}')">模型</button>
+            <button class="ghost" onclick="showSiteGroups('${esc(s.id)}')">分组</button>
+            <button class="ghost" onclick="openSiteLogin('${esc(s.id)}')">打开站点</button>
+            <button class="ghost" onclick="extractKey('${esc(s.id)}')">提取 Key</button>
+            <button class="ghost" onclick="openCreateKeyModal('${esc(s.id)}')">创建 Key</button>
+            <button class="ghost" onclick="refreshUsageFromSite('${esc(s.id)}')">拉日志</button>
+            <button class="ghost" onclick="copyApiUrl('${esc(s.id)}')">复制 URL</button>
+            <button onclick="runSingle('${esc(s.id)}',false)">签到</button>
+            <button class="ghost danger-link" onclick="deleteSite('${esc(s.id)}')">删除站点</button>
+          </div>
+        </details>
+      </td>
+    </tr>`;
+  }).join("")||"<tr><td colspan='5' class='muted'>没有匹配站点</td></tr>";
+}
+async function detectAndQuota(siteId){
+  try{
+    const ce=document.getElementById(`cap_${siteId}`),qe=document.getElementById(`quota_${siteId}`);
+    if(ce)ce.innerHTML="<span class='spin'></span> 检测中";
+    if(qe)qe.innerHTML="<span class='spin'></span> 读取中";
+    const d=await api(`/api/sites/${encodeURIComponent(siteId)}/inspect`),c=d.item.capabilities||{},q=d.item.quota||null;
+    if(ce)ce.innerHTML=capCell(c);
+    if(qe)qe.innerHTML=quotaCard(q,d.item.quota_status,d.item.quota_parse_note||d.item.quota_error);
+    const idx=state.sites.findIndex(s=>s.id===siteId);
+    if(idx>=0){
+      state.sites[idx].capabilities_cache=c;
+      state.sites[idx].quota_snapshot=q;
+      state.sites[idx].last_probe_at=d.item.last_probe_at;
+      state.sites[idx].profile_summary={...(state.sites[idx].profile_summary||{}),...(d.item.profile||{}),profile_source:d.item.profile_source||""};
+    }
+    msg(`检测完成：${siteId}`);
+  }catch(e){msg(e.message,false)}
+}
+async function deleteSite(siteId){
+  const s=state.sites.find(x=>x.id===siteId);
+  if(!s){msg("站点不存在",false);return}
+  const ok=confirm(`确认删除站点？\n\n名称：${s.display_name||s.name||s.id}\nID：${s.id}\nURL：${s.base_url}\n\n会删除站点配置和画像，但保留历史日志、Usage 与告警记录。`);
+  if(!ok)return;
+  try{
+    await api(`/api/sites/${encodeURIComponent(siteId)}`,{method:"DELETE"});
+    msg(`已删除站点：${siteId}（历史日志已保留）`);
+    await refreshAll();
+  }catch(e){msg(e.message,false)}
+}
+async function repairSiteCredentials(siteId){
+  const s=state.sites.find(x=>x.id===siteId);
+  if(!s){msg("站点不存在",false);return}
+  refs.onUrl.value=s.base_url;
+  refs.onAdapter.value=s.family||s.adapter||"new_api";
+  const shell=s.site_shell_type||s.family||s.adapter||"site";
+  msg(`开始提取 ${siteId} 登录态。请确认你已经在目标站点完成登录、挑战页或 OIDC 回跳。`);
+  let ex=null;
+  try{
+    const b=await bridgeExtract(s.base_url,refs.onAdapter.value);
+    ex=b.extract||{};
+    refs.extractJson.value=JSON.stringify(ex,null,2);
+  }catch(e){
+    try{
+      ex=JSON.parse(refs.extractJson.value||"{}");
+      msg(`Edge 桥接失败，改用手工提取 JSON：${e.message}`,false);
+    }catch{
+      msg(`修复失败：${e.message}`,false);
+      return;
+    }
+  }
+  try{
+    const d=await api(`/api/sites/${encodeURIComponent(siteId)}/credentials`,{method:"POST",body:JSON.stringify({adapter:refs.onAdapter.value,extract_result:ex})});
+    msg(`提取成功，已保存登录态：${siteId} | ${d.item.credential_status.label} | ${shell}`);
+    await refreshSites();
+    await detectAndQuota(siteId);
+    await loadSiteWorkbench(siteId,true);
+  }catch(e){msg(e.message,false)}
+}
+async function inspectAllSites(){await Promise.allSettled(state.sites.map(s=>detectAndQuota(s.id)));msg("全站检测与额度读取完成")}
+async function refreshSiteQuotaFast(){await Promise.allSettled(state.sites.map(async s=>{const qe=document.getElementById(`quota_${s.id}`);if(!qe)return;qe.innerHTML="<span class='spin'></span> 刷新中";try{const q=await api(`/api/sites/${encodeURIComponent(s.id)}/quota`),x=q.item||{};s.quota_snapshot=x;qe.innerHTML=quotaCard(x,x.quota_status,x.quota_parse_note)}catch(e){qe.innerHTML=quotaCard(null,String(e.message||"parse_failed"),e.message)}}))}
+async function showSiteModels(siteId){refs.modelSiteSelect.value=siteId;switchView("models");await loadModelsAndGroups()}
+async function showSiteGroups(siteId){refs.modelSiteSelect.value=siteId;switchView("models");await loadModelsAndGroups()}
+function openCreateKeyModalBySelection(){return openCreateKeyModal(refs.modelSiteSelect.value)}
+function hasModelPrice(x){return [x.model_ratio,x.group_ratio,x.user_group_ratio,x.completion_ratio,x.cache_ratio,x.fixed_price,x.price,x.input_price,x.output_price,x.cached_price,x.cache_read_price,x.cache_write_price,x.per_request_price].some(v=>v!=null&&v!=="")}
+function renderModelCatalog(){const kw=(refs.modelKw.value||"").trim().toLowerCase(),pf=refs.modelPriceFilter.value;let ml=[...(state.models||[])];if(kw)ml=ml.filter(x=>`${x.name||""} ${x.id||""}`.toLowerCase().includes(kw));if(pf==="priced")ml=ml.filter(hasModelPrice);if(pf==="missing")ml=ml.filter(x=>!hasModelPrice(x));ml.sort((a,b)=>(Number(a.price_rank||9)-Number(b.price_rank||9))||String(a.name||a.id).localeCompare(String(b.name||b.id)));refs.modelCatalogT.innerHTML=ml.length?ml.map(modelRow).join(""):"<tr><td colspan='7' class='muted'>没有匹配模型。如果站点未开放价格接口，请点“价格诊断”查看原因。</td></tr>"}
+async function loadModelsAndGroups(tip=true){const sid=refs.modelSiteSelect.value;if(!sid){refs.modelHint.textContent="请先选择站点";return}refs.modelHint.textContent="正在读取模型与分组...";refs.modelCatalogT.innerHTML="<tr><td colspan='7'><span class='spin'></span> 加载中...</td></tr>";refs.groupModelT.innerHTML="<tr><td colspan='3'><span class='spin'></span> 加载中...</td></tr>";try{const [m,g]=await Promise.all([api(`/api/sites/${encodeURIComponent(sid)}/models`),api(`/api/sites/${encodeURIComponent(sid)}/groups-models`)]);const ml=m.item.items||[],gl=g.item.items||[];state.models=ml;state.modelMeta=m.item;renderModelCatalog();refs.groupModelT.innerHTML=gl.length?gl.map(x=>`<tr><td>${esc(x.name||x.id)} <span class="pill">${esc(x.mapping_type||"model")}</span>${x.mapping_ids&&x.mapping_ids.length?`<div class='source-line'>映射ID: ${esc(x.mapping_ids.slice(0,8).join(", "))}</div>`:""}</td><td class='num'>${esc(fmt(x.model_count))}</td><td>${esc((x.models||[]).slice(0,12).map(y=>y.name||y.id).join(", ")||"-")}</td></tr>`).join(""):"<tr><td colspan='3' class='muted'>该站点未返回分组，已降级为全模型目录。</td></tr>";state.createKey.groups=gl;const priced=ml.filter(hasModelPrice).length;refs.modelHint.textContent=`站点 ${sid} | 模型 ${ml.length} 个，已解析计价 ${priced} 个 | 模型来源:${m.item.source||"-"} | 分组来源:${g.item.source||"-"}`;if(tip)msg(`模型与分组已刷新：${sid}`)}catch(e){refs.modelHint.textContent=e.message;msg(e.message,false)}}
+function loadModelsAndGroupsForSite(siteId){refs.modelSiteSelect.value=siteId;switchView("models");loadModelsAndGroups(true);setTimeout(showModelDiagnostics,250)}
+function closeDiagModal(){refs.diagModal.classList.add("hidden")}
+async function showModelDiagnostics(){const sid=refs.modelSiteSelect.value;if(!sid){msg("请先选择站点",false);return}refs.diagModal.classList.remove("hidden");refs.diagSummary.textContent="正在诊断模型与价格接口...";refs.diagT.innerHTML="<tr><td colspan='6'><span class='spin'></span> 加载中...</td></tr>";try{const d=await api(`/api/sites/${encodeURIComponent(sid)}/models/diagnostics`),x=d.item||{},rows=x.diagnostics||[],matrix=x.diagnostic_matrix||[];refs.diagSummary.textContent=`${sid} | 模型 ${x.model_count||0} 个 | 有价 ${x.priced_count||0} 个 | ${x.note||""}`;const matrixHtml=matrix.length?`<tr><td colspan="6"><div class="matrix">${matrix.map(m=>`<div class="matrix-row ${esc(m.status)}"><b>${esc(m.title)}</b><div class="muted">${esc(m.evidence||"")}</div><div class="source-line">建议：${esc(m.next_action||"查看接口返回")}</div></div>`).join("")}</div></td></tr>`:"";const rowsHtml=rows.length?rows.map(r=>`<tr><td>${esc(r.type)}</td><td class='mono'>${esc(r.path)}</td><td class='num'><span class='pill ${r.ok?"ok":"warn"}'>${esc(fmt(r.status))}</span></td><td class='num'>${esc(fmt(r.parsed_count))}</td><td class='num'>${esc(fmt(r.priced_count))}</td><td>${esc(r.message||"")}</td></tr>`).join(""):"<tr><td colspan='6' class='muted'>没有诊断记录。如果模型仍为空，通常是目标站点未公开目录接口或当前 Key 权限不足。</td></tr>";refs.diagT.innerHTML=matrixHtml+rowsHtml}catch(e){refs.diagSummary.textContent=e.message;refs.diagT.innerHTML="<tr><td colspan='6' class='muted'>诊断失败</td></tr>";msg(e.message,false)}}
+async function exportSiteDiagnostics(siteId){try{const d=await api(`/api/sites/${encodeURIComponent(siteId)}/diagnostics`);const blob=new Blob([JSON.stringify(d.item,null,2)],{type:"application/json;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`diagnostics-${siteId}-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href);msg("诊断报告已导出")}catch(e){msg(e.message,false)}}
+async function exportProtocolReport(siteId){try{const d=await api(`/api/sites/${encodeURIComponent(siteId)}/protocol-report`);const blob=new Blob([JSON.stringify(d.item,null,2)],{type:"application/json;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`protocol-report-${siteId}-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href);msg("协议报告已导出")}catch(e){msg(e.message,false)}}
+function downloadModelsCsv(){const rows=(state.models||[]).map(x=>({id:x.id,name:x.name,platform:x.platform,billing_mode:x.billing_mode,model_ratio:x.model_ratio,group_ratio:x.group_ratio||x.user_group_ratio,completion_ratio:x.completion_ratio,cache_ratio:x.cache_ratio,input_price:x.input_price,output_price:x.output_price,cache_read_price:x.cache_read_price,cache_write_price:x.cache_write_price,per_request_price:x.per_request_price,fixed_price:x.fixed_price,price_source:x.price_source,source_level:x.source_level,missing_price_reason:x.missing_price_reason,effective_price_text:x.effective_price_text||x.price_text||""}));if(!rows.length){msg("当前没有可导出的模型",false);return}const cols=Object.keys(rows[0]);const csv=[cols.join(","),...rows.map(r=>cols.map(c=>`"${String(r[c]??"").replace(/"/g,'""')}"`).join(","))].join("\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`models-${refs.modelSiteSelect.value||"site"}.csv`;a.click();URL.revokeObjectURL(a.href)}
+function showKey(siteId,item){state.keyPlain=item.key||"";state.showKey=false;refs.keySite.textContent=`站点:${siteId}`;refs.keySource.textContent=`来源:${fmt(item.source)}`;refs.keyGroup.textContent=`分组:${fmt(item.group)}`;refs.keyMasked.textContent=item.key_masked||"(暂无)"}
+function toggleKey(){if(!state.keyPlain){msg("当前没有可显示的 Key",false);return}state.showKey=!state.showKey;refs.keyMasked.textContent=state.showKey?state.keyPlain:mask(state.keyPlain)}
+async function copyKey(){if(!state.keyPlain){msg("当前没有可复制的 Key",false);return}await navigator.clipboard.writeText(state.keyPlain);msg("Key 已复制")}
+async function extractKey(siteId){try{const p=prompt("优先匹配的 Key 名称（可留空）","")||"";const d=await api(`/api/sites/${encodeURIComponent(siteId)}/keys/extract`,{method:"POST",body:JSON.stringify({preferred_name:p})});showKey(siteId,d.item);msg("提取 Key 成功")}catch(e){msg(e.message,false)}}
+async function copyApiUrl(siteId){try{const d=await api(`/api/api-url/${encodeURIComponent(siteId)}`);await navigator.clipboard.writeText(d.item.base_url_v1||"");msg(`API URL 已复制 ${d.item.base_url_v1||""}`)}catch(e){msg(e.message,false)}}
+function renderGroupModelsForCreate(g){const ms=(g&&g.models)||[];if(!ms.length){refs.kcModelsBody.innerHTML="<tr><td colspan='6' class='muted'>该分组未返回模型列表，但仍可继续创建。</td></tr>";return}refs.kcModelsBody.innerHTML=ms.map(createModelRow).join("")}
+function onCreateGroupChanged(){const gid=refs.kcGroupSelect.value;state.createKey.selectedGroupId=gid;const g=state.createKey.groups.find(x=>x.id===gid)||null;renderGroupModelsForCreate(g);refs.kcHint.textContent=g?`已选择分组:${g.name}（模型数 ${fmt(g.model_count)}）`:"未选择分组"}
+function closeCreateKeyModal(){refs.keyModal.classList.add("hidden")}
+async function openCreateKeyModal(siteId){if(!siteId){msg("请先选择站点",false);return}refs.keyModal.classList.remove("hidden");refs.kcSite.value=siteId;refs.kcName.value=`checkin-${Date.now()}`;refs.kcGroupManual.value="";refs.kcHint.textContent="正在读取分组与模型...";refs.kcModelsBody.innerHTML="<tr><td colspan='6'><span class='spin'></span> 加载中...</td></tr>";try{const d=await api(`/api/sites/${encodeURIComponent(siteId)}/groups-models`);const groups=d.item.items||[];state.createKey={siteId,groups,selectedGroupId:groups[0]?.id||""};refs.kcGroupSelect.innerHTML=groups.length?groups.map(g=>`<option value="${esc(g.id)}">${esc(g.name||g.id)}</option>`).join(""):"<option value=''>（站点未返回分组）</option>";refs.kcGroupSelect.value=state.createKey.selectedGroupId;onCreateGroupChanged();refs.kcHint.textContent=[d.item.source?`分组:${d.item.source}`:"",d.item.model_source?`模型:${d.item.model_source}`:""] .filter(Boolean).join(" | ")||"就绪"}catch(e){refs.kcHint.textContent=e.message;refs.kcModelsBody.innerHTML="<tr><td colspan='6' class='muted'>读取失败，可手填分组后继续创建。</td></tr>";msg(e.message,false)}}
+async function submitCreateKey(){const sid=state.createKey.siteId||refs.kcSite.value.trim();if(!sid){msg("缺少站点 ID",false);return}try{const group=(refs.kcGroupManual.value.trim()||refs.kcGroupSelect.value||"").trim(),name=refs.kcName.value.trim()||`checkin-${Date.now()}`;const d=await api(`/api/sites/${encodeURIComponent(sid)}/keys/create`,{method:"POST",body:JSON.stringify({name,group})});showKey(sid,d.item);refs.kcHint.textContent=`创建成功：${name}${group?` | 分组:${group}`:""}`;msg("创建 Key 成功")}catch(e){msg(e.message,false)}}
+function setCheckinRunning(running){
+  state.checkinRunning=running;
+  if(refs.checkinBtn)refs.checkinBtn.disabled=running;
+  if(refs.checkinDryBtn)refs.checkinDryBtn.disabled=running;
+}
+async function runCheckin(dry){
+  if(state.checkinRunning){msg("已有签到任务运行中，请等待当前任务完成");return}
+  setCheckinRunning(true);
+  try{
+    const d=await api("/api/checkin/run",{method:"POST",body:JSON.stringify({dry_run:dry,enabled_only:true})});
+    if(d.item&&d.item.code==="job_already_running"){
+      msg(d.item.message||"已有签到任务运行中，请等待当前任务完成");
+      setCheckinRunning(false);
+      await refreshCheckinHistory(false);
+      return;
+    }
+    state.currentJob=d.item.job_id;
+    msg(`签到任务已启动 ${state.currentJob}`);
+    listenJob(state.currentJob);
+  }catch(e){setCheckinRunning(false);msg(e.message,false)}
+}
+async function runSingle(siteId,dry){
+  if(state.checkinRunning){msg("已有签到任务运行中，请等待当前任务完成");return}
+  setCheckinRunning(true);
+  try{
+    const d=await api("/api/checkin/run",{method:"POST",body:JSON.stringify({site_ids:[siteId],dry_run:dry,enabled_only:false})});
+    if(d.item&&d.item.code==="job_already_running"){
+      msg(d.item.message||"已有签到任务运行中，请等待当前任务完成");
+      setCheckinRunning(false);
+      await refreshCheckinHistory(false);
+      return;
+    }
+    state.currentJob=d.item.job_id;
+    listenJob(state.currentJob);
+  }catch(e){setCheckinRunning(false);msg(e.message,false)}
+}
+function listenJob(jobId){
+  refs.eventsT.innerHTML="";
+  refs.progressText.textContent="连接任务事件流...";
+  const es=new EventSource(`/api/jobs/${encodeURIComponent(jobId)}/events`,{withCredentials:true});
+  es.addEventListener("step",ev=>{
+    const d=JSON.parse(ev.data),cls=d.status==="ok"?"ok":d.status==="failed"?"err":d.status==="skipped"?"warn":"";
+    refs.progressText.textContent=`${d.step} | ${d.message}`;
+    refs.eventsT.insertAdjacentHTML("afterbegin",`<tr><td class='mono'>${esc(d.created_at)}</td><td>${esc(d.step)}</td><td><span class='pill ${cls}'>${esc(d.status)}</span></td><td>${esc(d.message||"")}</td><td class='num'>${esc(fmt(d.elapsed_ms))}</td></tr>`)
+  });
+  es.addEventListener("end",async ev=>{
+    const d=JSON.parse(ev.data),r=d.result&&d.result.report,s=r&&r.summary,by=r&&r.checkin_summary_by_level;
+    refs.progressText.textContent=r&&r.human_summary?r.human_summary:(s?`任务结束: ${d.status} | 成功 ${s.ok||0} | 跳过 ${s.skipped||0} | 失败 ${s.failed||0}`:`任务结束: ${d.status}`);
+    if(by)msg(`签到完成：成功 ${by.success||0}，已签到 ${by.already_checked_in||0}，无需接口 ${by.no_interface||0}，需修复 ${by.need_auth||0}，失败 ${(by.request_failed||0)+(by.network_error||0)}。`,(by.request_failed||0)+(by.network_error||0)===0);
+    es.close();
+    setCheckinRunning(false);
+    await refreshAll();
+  });
+  es.onerror=()=>{es.close();setCheckinRunning(false);msg("任务事件流中断，可手动刷新",false)}
+}
+async function refreshLogs(toast=false){try{const q=logQuery().toString();const [sys,use]=await Promise.all([api(`/api/logs/system?${q}`),api(`/api/logs/usage?${q}`)]);state.sys=sys.item.items||[];state.usage=use.item.items||[];refs.sysT.innerHTML=state.sys.map(x=>`<tr><td class='mono'>${esc(fmt(x.created_at))}</td><td>${esc(fmt(x.site_id))}</td><td>${esc(fmt(x.method))}</td><td class='mono'>${esc(fmt(x.path))}</td><td class='num'>${esc(fmt(x.status))}</td><td class='num'>${esc(fmt(x.elapsed_ms))}</td><td>${esc(fmt(x.message))}</td></tr>`).join("");refs.usageT.innerHTML=state.usage.map(x=>`<tr><td class='mono'>${esc(fmt(x.source_ts||x.created_at))}</td><td>${esc(fmt(x.site_id))}</td><td>${esc(fmt(x.model))}<div class='muted mono'>${esc(mask(x.api_key||""))}</div></td><td class='num'>${esc(fmt(x.prompt_tokens))}</td><td class='num'>${esc(fmt(x.completion_tokens))}</td><td class='num'>${esc(fmt(x.token_count))}</td><td class='num'>${esc(fmt(x.cost))}</td><td><span class='pill ${x.parse_status==="success"?"ok":x.parse_status==="failed"?"err":"warn"}'>${esc(fmt(x.parse_status))}</span></td><td>${esc(fmt(x.parse_note))}</td></tr>`).join("");renderLogClusters();updateStats();if(toast)msg("日志已刷新")}catch(e){msg(e.message,false)}}
+async function refreshUsageFromSites(siteIds=[]){try{const body=Array.isArray(siteIds)&&siteIds.length?{site_ids:siteIds}:{};const d=await api("/api/logs/usage/refresh",{method:"POST",body:JSON.stringify(body)});const brief=(d.item.items||[]).map(x=>`${x.site_id}:${x.inserted||0}${x.message?`(${x.message})`:""}`).join(" | ");msg(`拉取完成${brief?` -> ${brief}`:""}`);await Promise.all([refreshLogs(false),refreshUsageSummary(),refreshAlerts(false)])}catch(e){msg(e.message,false)}}
+function refreshUsageFromSite(siteId){return refreshUsageFromSites([siteId])}
+function downloadUsageCsv(){location.href=`/api/logs/usage/export.csv?${logQuery().toString()}`}
+function classifyBulkFailure(item){
+  const text=`${item&&item.message||""} ${item&&item.summary||""} ${(item&&item.steps||[]).map(x=>x.message||"").join(" ")}`;
+  if(/Too many subrequests|probe budget exhausted|预算耗尽/i.test(text))return "预算耗尽";
+  if(/html|challenge|expected json|挑战页/i.test(text))return "HTML挑战页";
+  if(/401|403|token|登录态|未登录|无效的令牌|权限|unauthorized|forbidden/i.test(text))return "登录态失效";
+  if(/Router Key|key_limited|Key 权限|权限限制/i.test(text))return "Key权限受限";
+  if(/530|1016|network|timeout|dns|fetch failed/i.test(text))return "站点网络异常";
+  if(/auth_shell|adapter_gap|协议待确认|控制台外壳/i.test(text))return "协议待确认";
+  if(/not.?exposed|unsupported|未开放|不支持|404/i.test(text))return "接口未开放";
+  return "其它失败";
+}
+function renderBulkProgress(progress){
+  if(!refs.bulkProgress)return;
+  if(!progress){refs.bulkProgress.classList.remove("active");refs.bulkProgress.innerHTML="";return}
+  const done=(progress.success||0)+(progress.failed||0)+(progress.skipped||0);
+  const pctDone=progress.total?Math.round(done/progress.total*100):0;
+  const cats=Object.entries(progress.categories||{}).map(([k,v])=>`<span class="pill warn">${esc(k)} ${esc(v)}</span>`).join("");
+  const failed=(progress.failedItems||[]).slice(0,5).map(x=>`${x.site_id}:${x.failure_category||classifyBulkFailure(x)}`).join(" | ");
+  refs.bulkProgress.classList.add("active");
+  refs.bulkProgress.innerHTML=`<div class="panel-head"><h3 style="margin:0">批量任务进度</h3><span class="diag">${esc(progress.action)} · ${esc(done)}/${esc(progress.total)}</span></div>
+    <div class="progress-track"><i style="--w:${pctDone}%"></i></div>
+    <div class="source-line" style="margin-top:8px">当前站点：${esc(progress.current||"-")} · 成功 ${esc(progress.success)} · 失败 ${esc(progress.failed)} · 跳过 ${esc(progress.skipped)}</div>
+    <div class="category-grid">${cats||"<span class='pill ok'>暂无失败分类</span>"}</div>
+    ${failed?`<div class="soft-note" style="margin-top:8px">失败样例：${esc(failed)}</div>`:""}`;
+}
+async function runBulkActionQueue(action,ids){
+  const progress={action,total:ids.length,current:"",success:0,failed:0,skipped:0,categories:{},failedItems:[]};
+  renderBulkProgress(progress);
+  const allItems=[];
+  for(const id of ids){
+    progress.current=id;renderBulkProgress(progress);
+    try{
+      const d=await api("/api/sites/actions/bulk",{method:"POST",body:JSON.stringify({action,site_ids:[id]})});
+      const item=d.item||{},rows=item.items&&item.items.length?item.items:[...(item.success_sites||[]),...(item.failed_sites||[]),...(item.skipped_sites||[])];
+      for(const row of rows){
+        const normalized={...row,site_id:row.site_id||id};
+        allItems.push(normalized);
+        if(normalized.skipped){progress.skipped+=1;continue}
+        if(normalized.ok){progress.success+=1;continue}
+        progress.failed+=1;
+        const cat=normalized.failure_category||classifyBulkFailure(normalized);
+        normalized.failure_category=cat;
+        progress.categories[cat]=(progress.categories[cat]||0)+1;
+        progress.failedItems.push(normalized);
+      }
+      if(action==="export-diagnostics"&&item){
+        const blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json;charset=utf-8"});
+        const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`diagnostics-${id}-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href);
+      }
+    }catch(e){
+      const row={site_id:id,ok:false,message:e.message,failure_category:classifyBulkFailure({message:e.message})};
+      allItems.push(row);progress.failed+=1;progress.categories[row.failure_category]=(progress.categories[row.failure_category]||0)+1;progress.failedItems.push(row);
+    }
+    renderBulkProgress(progress);
+  }
+  const failedText=progress.failedItems.slice(0,5).map(x=>`${x.site_id}:${x.failure_category}`).join(" | ");
+  msg(`批量动作完成：${action}\n成功 ${progress.success} 个，失败 ${progress.failed} 个，跳过 ${progress.skipped} 个${failedText?`\n失败样例：${failedText}`:""}`,progress.failed===0);
+  await Promise.all([refreshSites(),refreshHealth(false),refreshMetrics(),refreshReadiness(false)]);
+  return allItems;
+}
+async function runBulkAction(action){try{const healthItems=((state.health&&state.health.items)||[]);let ids=[];if(action==="disable")ids=healthItems.filter(x=>x.enabled&&x.status==="critical").map(x=>x.site_id);else ids=healthItems.filter(x=>x.enabled).map(x=>x.site_id);if(action==="disable"&&!ids.length){msg("没有需要禁用的严重异常站点",false);return}if(action==="disable"&&!confirm(`确认禁用 ${ids.length} 个严重异常站点？不会删除历史日志。`))return;const queueActions=new Set(["full-heal","rebuild-model-cache","models","usage","quota"]);if(queueActions.has(action)&&ids.length>1){msg(`正在逐站执行：${action}`);await runBulkActionQueue(action,ids);return}msg(`正在执行批量动作：${action}`);const d=await api("/api/sites/actions/bulk",{method:"POST",body:JSON.stringify({action,site_ids:ids})});let item=d.item||{};if(item.needs_client_queue&&item.remaining_site_ids&&item.remaining_site_ids.length){await runBulkActionQueue(action,item.remaining_site_ids);return}const next=(item.next_actions||[]).join("；"),failed=(item.failed_sites||[]).slice(0,5).map(x=>`${x.site_id}:${x.failure_category||classifyBulkFailure(x)}`).join(" | ");if(action==="export-diagnostics"){const blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`bulk-diagnostics-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href)}msg(`${item.summary_text||`批量动作完成：${action}`}${next?`\n下一步：${next}`:""}${failed?`\n失败样例：${failed}`:""}`,(item.failed||0)===0);await Promise.all([refreshSites(),refreshHealth(false),refreshMetrics(),refreshReadiness(false)])}catch(e){msg(e.message,false)}}
+function renderLogClusters(){const map=new Map();for(const x of state.sys||[]){if(Number(x.ok)===1)continue;const key=`${x.site_id||"-"} ${x.path||""} ${x.status||""} ${String(x.message||"").slice(0,60)}`;const cur=map.get(key)||{count:0,site_id:x.site_id,path:x.path,status:x.status,message:x.message,last:x.created_at};cur.count+=1;cur.last=x.created_at||cur.last;map.set(key,cur)}const rows=Array.from(map.values()).sort((a,b)=>b.count-a.count).slice(0,12);refs.logClusters.innerHTML=rows.length?rows.map(x=>`<div class="cluster"><div><b>${esc(x.site_id||"-")}</b> <span class="pill ${Number(x.status)>=500?"err":"warn"}">${esc(fmt(x.status))}</span> <span class="muted">${esc(fmt(x.last))}</span></div><div class="mono muted">${esc(x.path||"")}</div><div>${esc(x.message||"")}</div><div class="source-line">出现 ${esc(fmt(x.count))} 次</div></div>`).join(""):"<div class='muted'>暂无错误聚类</div>"}
+async function refreshUsageSummary(){try{const d=await api(`/api/logs/usage/summary?${summaryQuery().toString()}`);state.summary=d.item.items||[];refs.summaryT.innerHTML=state.summary.length?state.summary.map(x=>`<tr><td>${esc(fmt(x.site_id))}</td><td class='num'>${esc(num(x.token_total,0))}</td><td class='num'>${esc(num(x.cost_total,6))}</td><td class='num'>${esc(num(x.usage_count,0))}</td><td class='num'>${esc(pct(x.error_rate))}</td></tr>`).join(""):"<tr><td colspan='5' class='muted'>暂无汇总数据</td></tr>";updateStats()}catch(e){msg(e.message,false)}}
+async function refreshAlerts(toast=false){try{const q=new URLSearchParams({limit:"300"});if(refs.alertSite.value)q.set("site_id",refs.alertSite.value);if(refs.alertLevel.value)q.set("level",refs.alertLevel.value);if(refs.alertStatus.value)q.set("status",refs.alertStatus.value);if(refs.alertRule.value)q.set("rule_key",refs.alertRule.value);if(refs.alertKw.value.trim())q.set("q",refs.alertKw.value.trim());const d=await api(`/api/alerts?${q.toString()}`);state.alerts=d.item.items||[];refs.alertChkAll.checked=false;refs.alertT.innerHTML=state.alerts.map(a=>`<tr><td><input type='checkbox' class='alertChk' value='${a.id}'/></td><td class='mono'>${esc(fmt(a.created_at))}</td><td>${esc(fmt(a.site_id))}</td><td>${esc(fmt(a.rule_key))}</td><td><span class='pill ${a.level==="critical"?"err":"warn"}'>${esc(fmt(a.level))}</span></td><td><span class='pill ${a.status==="resolved"?"ok":a.status==="acked"?"warn":"err"}'>${esc(fmt(a.status))}</span></td><td class='num'>${esc(fmt(a.metric_value))}</td><td class='num'>${esc(fmt(a.threshold_value))}</td><td class='num'>${esc(fmt(a.sample_size))}</td><td>${esc(fmt(a.title))}<div class='muted mono'>${esc(fmt(a.detail))}</div></td></tr>`).join("");updateStats();if(toast)msg("告警已刷新")}catch(e){msg(e.message,false)}}
+function toggleAlertCheckAll(){document.querySelectorAll('.alertChk').forEach(x=>x.checked=refs.alertChkAll.checked)}
+function selectedAlertIds(){return Array.from(document.querySelectorAll('.alertChk:checked')).map(x=>Number(x.value)).filter(x=>Number.isInteger(x)&&x>0)}
+async function ackSelectedAlerts(){const ids=selectedAlertIds();if(!ids.length){msg("请先勾选告警",false);return}try{const d=await api("/api/alerts/ack",{method:"POST",body:JSON.stringify({ids})});msg(`已确认 ${d.item.updated||0} 条告警`);await refreshAlerts(false)}catch(e){msg(e.message,false)}}
+async function ackAllAlerts(){try{const d=await api("/api/alerts/ack-all",{method:"POST",body:JSON.stringify({site_id:refs.alertSite.value||undefined,level:refs.alertLevel.value||undefined,rule_key:refs.alertRule.value||undefined})});msg(`批量确认完成：${d.item.updated||0} 条`);await refreshAlerts(false)}catch(e){msg(e.message,false)}}
+async function refreshPolicies(){try{const [r,a]=await Promise.all([api("/api/policies/retry"),api("/api/policies/alerts")]);state.policies.retry=r.item||{};state.policies.alerts=a.item||{};refs.rpMaxAttempts.value=state.policies.retry.max_attempts??4;refs.rpBaseDelay.value=state.policies.retry.base_delay_s??2;refs.rpMultiplier.value=state.policies.retry.multiplier??2;refs.rpMaxDelay.value=state.policies.retry.max_delay_s??60;refs.rpJitter.value=state.policies.retry.jitter_ratio??0.2;refs.rpTimeout.value=state.policies.retry.timeout_ms??12000;refs.apDailyCost.value=state.policies.alerts.daily_cost??20;refs.apDailyTokens.value=state.policies.alerts.daily_tokens??2000000;refs.apFailureRate.value=state.policies.alerts.failure_rate_15m??0.25;refs.apFailureMin.value=state.policies.alerts.failure_rate_15m_min_samples??20;refs.apConsecutive.value=state.policies.alerts.consecutive_failures??3;refs.apPreset.value=state.policies.alerts.preset||"balanced";loadSiteOverrideForm()}catch(e){msg(e.message,false)}}
+async function saveRetryPolicy(){try{await api("/api/policies/retry",{method:"PUT",body:JSON.stringify({max_attempts:Number(refs.rpMaxAttempts.value),base_delay_s:Number(refs.rpBaseDelay.value),multiplier:Number(refs.rpMultiplier.value),max_delay_s:Number(refs.rpMaxDelay.value),jitter_ratio:Number(refs.rpJitter.value),timeout_ms:Number(refs.rpTimeout.value)})});msg("工作区重试策略已保存");await refreshPolicies()}catch(e){msg(e.message,false)}}
+async function saveAlertPolicy(){try{await api("/api/policies/alerts",{method:"PUT",body:JSON.stringify({preset:refs.apPreset.value.trim()||"balanced",daily_cost:Number(refs.apDailyCost.value),daily_tokens:Number(refs.apDailyTokens.value),failure_rate_15m:Number(refs.apFailureRate.value),failure_rate_15m_min_samples:Number(refs.apFailureMin.value),consecutive_failures:Number(refs.apConsecutive.value)})});msg("告警策略已保存");await refreshPolicies()}catch(e){msg(e.message,false)}}
+function currentOverrideSite(){return state.sites.find(s=>s.id===refs.siteOverrideSite.value)||null}
+function loadSiteOverrideForm(){const s=currentOverrideSite(),b=state.policies.retry||{max_attempts:4,base_delay_s:2,multiplier:2,max_delay_s:60,jitter_ratio:0.2,timeout_ms:12000},o=s&&s.retry_override&&s.retry_override.enabled?s.retry_override:null,x=o||b;refs.soEnabled.checked=!!o;refs.soMaxAttempts.value=x.max_attempts??b.max_attempts;refs.soBaseDelay.value=x.base_delay_s??b.base_delay_s;refs.soMultiplier.value=x.multiplier??b.multiplier;refs.soMaxDelay.value=x.max_delay_s??b.max_delay_s;refs.soJitter.value=x.jitter_ratio??b.jitter_ratio;refs.soTimeout.value=x.timeout_ms??b.timeout_ms;refs.soHint.textContent=s?`当前站点:${s.id}`:""}
+async function saveSiteRetryOverride(){const s=currentOverrideSite();if(!s){msg("请先选择站点",false);return}try{const over=refs.soEnabled.checked?{enabled:true,max_attempts:Number(refs.soMaxAttempts.value),base_delay_s:Number(refs.soBaseDelay.value),multiplier:Number(refs.soMultiplier.value),max_delay_s:Number(refs.soMaxDelay.value),jitter_ratio:Number(refs.soJitter.value),timeout_ms:Number(refs.soTimeout.value)}:null;await api(`/api/sites/${encodeURIComponent(s.id)}`,{method:"PUT",body:JSON.stringify({name:s.name,adapter:s.adapter,base_url:s.base_url,enabled:s.enabled,retry_override:over})});msg(`站点 ${s.id} 重试覆盖已保存`);await refreshSites()}catch(e){msg(e.message,false)}}
+async function clearSiteRetryOverride(){refs.soEnabled.checked=false;await saveSiteRetryOverride()}
+async function refreshSchedule(){try{const d=await api("/api/schedule");refs.schEnabled.checked=!!d.item.enabled;refs.schTime.value=d.item.time||"09:05";refs.schInfo.textContent=`时区:${d.item.timezone||"Asia/Shanghai"} 上次:${d.item.last_run_date||"-"}`}catch(e){refs.schInfo.textContent=e.message}}
+async function saveSchedule(){try{await api("/api/schedule",{method:"PUT",body:JSON.stringify({enabled:refs.schEnabled.checked,time:refs.schTime.value,timezone:"Asia/Shanghai"})});msg("计划任务已保存");await refreshSchedule()}catch(e){msg(e.message,false)}}
+async function runNow(){try{const d=await api("/api/schedule/run-now",{method:"POST"});if(d.item.job_id)listenJob(d.item.job_id);msg("已触发立即执行")}catch(e){msg(e.message,false)}}
+async function probeSite(){try{const d=await api("/api/onboarding/probe",{method:"POST",body:JSON.stringify({url:refs.onUrl.value.trim()})});refs.extractJson.value=JSON.stringify(d.item,null,2);if(["new_api","qingyi","onetoken","auth_shell"].includes(d.item.adapter_guess))refs.onAdapter.value=d.item.adapter_guess;msg("站点探测完成")}catch(e){msg(e.message,false)}}
+async function bridgeExtract(baseUrl,adapter,options={}){return new Promise((resolve,reject)=>{const requestId=`req_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;let done=false;const timer=setTimeout(()=>{if(done)return;done=true;window.removeEventListener("message",onMessage);reject(new Error("浏览器桥接超时：请确认 Edge 插件已安装、目标站点标签页已打开，并且已经完成登录或 OIDC 回跳"))},8000);function onMessage(ev){const d=ev.data||{};if(d.source!=="checkin_bridge_extension"||d.type!=="CHECKIN_EXTRACT_RESPONSE"||d.request_id!==requestId)return;if(done)return;done=true;clearTimeout(timer);window.removeEventListener("message",onMessage);if(!d.ok){reject(new Error(d.message||"浏览器提取失败"));return}resolve(d)}window.addEventListener("message",onMessage);window.postMessage({type:"CHECKIN_EXTRACT_REQUEST",request_id:requestId,payload:{base_url:baseUrl,adapter,auto_open:!!options.autoOpen,close_auto_open:false,browser:"edge"}},"*")})}
+async function extractAndDraft(){try{const base=refs.onUrl.value.trim(),adapter=refs.onAdapter.value;let ex={};try{const b=await bridgeExtract(base,adapter);ex=b.extract||{};refs.extractJson.value=JSON.stringify(ex,null,2)}catch{ex=JSON.parse(refs.extractJson.value||"{}");msg("桥接不可用，已改用手工 JSON",false)}const d=await api("/api/onboarding/extract",{method:"POST",body:JSON.stringify({base_url:base,adapter,extract_result:ex})});refs.draftJson.value=JSON.stringify(d.item,null,2);msg("提取成功，已生成草稿")}catch(e){msg(e.message,false)}}
+async function autoOnboard(){try{const base=refs.onUrl.value.trim(),adapter=refs.onAdapter.value;let ex={};try{const b=await bridgeExtract(base,adapter);ex=b.extract||{};refs.extractJson.value=JSON.stringify(ex,null,2)}catch{ex=JSON.parse(refs.extractJson.value||"{}")};const d=await api("/api/onboarding/auto",{method:"POST",body:JSON.stringify({url:base,adapter,extract_result:ex})});refs.draftJson.value=JSON.stringify(d.item.site,null,2);const replaced=d.item.replaced_duplicates||[];msg(replaced.length?`自动接入成功，并已禁用 ${replaced.length} 个旧重复站点：${replaced.map(x=>x.id).join(", ")}`:"自动接入并保存成功");await refreshSites()}catch(e){msg(e.message,false)}}
+refs.siteKw.addEventListener("input",renderSites);refs.modelKw.addEventListener("input",renderModelCatalog);refs.modelPriceFilter.addEventListener("change",renderModelCatalog);refs.logSite.addEventListener("change",()=>refreshLogs(false));refs.logRange.addEventListener("change",()=>{applyRangeToggle();refreshLogs(false)});refs.summaryRange.addEventListener("change",()=>{applyRangeToggle();refreshUsageSummary()});refs.alertSite.addEventListener("change",()=>refreshAlerts(false));refs.alertLevel.addEventListener("change",()=>refreshAlerts(false));refs.alertStatus.addEventListener("change",()=>refreshAlerts(false));refs.alertRule.addEventListener("change",()=>refreshAlerts(false));refs.siteOverrideSite.addEventListener("change",loadSiteOverrideForm);refs.modelSiteSelect.addEventListener("change",()=>loadModelsAndGroups(false));refs.keyModal.addEventListener("click",e=>{if(e.target===refs.keyModal)closeCreateKeyModal()});refs.diagModal.addEventListener("click",e=>{if(e.target===refs.diagModal)closeDiagModal()});
+applyTheme(localStorage.getItem(THEME_KEY)||"light");applyRangeToggle();autoLogin();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
